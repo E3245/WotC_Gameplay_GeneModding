@@ -1,0 +1,27 @@
+[GM_IRI_Adaptation X2GeneModTemplate]
+DisplayName="Adaptation / Supercompensation"
+Summary="Adaptation: When taking damage, soldier will gain stacking resistance to that damage type until the end of the mission. Supercompensation: if critically wounded, soldier's maximum Health will be increased by 1. Soldier will require extra time to recover. Triggers once per tactical mission"
+
+[GM_IRI_BerserkGenes X2GeneModTemplate]
+DisplayName="Berserker Genes"
+Summary="Taking damage will cause this soldier to enter berserker rage and attack enemies in sight."
+
+[GM_IRI_SecondaryHeart X2GeneModTemplate]
+DisplayName="Secondary Heart"
+Summary="Upon taking lethal damage, this soldier will begin bleeding out. They will remain conscious, but they will die if they are not Stabilizied or evacuated within a few turns."
+
+[GM_IRI_TranquilMind X2GeneModTemplate]
+DisplayName="Tranquil Mind"
+Summary="This soldier cannot be targeted or affect by any psionic abilities, inclduing those from allied sources."
+
+[GM_IRI_ChaoticMind X2GeneModTemplate]
+DisplayName="Chaotic Mind"
+Summary="This soldier receives a large bonus to Psi Offense, but cannot contain the power, and at the end of turn will damage all units within 2 tiles, including allies. Solace and Mind Shield will suppress this effect."
+
+[GM_IRI_CheetahGenes X2GeneModTemplate]
+DisplayName="Cheetah Genes"
+Summary="This soldier receives a large bonus to Mobility, but moving will make the soldier gradually lose the bonus, and even transform it into a penalty. Lost mobility is gradually recovered each turn the soldier doesn't move."
+
+[GM_IRI_LizardReflex X2GeneModTemplate]
+DisplayName="Viper's Reflex"
+Summary="Soldier gains +20 Dodge, and when Dodging enemy attacks, they will move out of the way of the attack, completely avoid the damage. Triggers once per turn."
