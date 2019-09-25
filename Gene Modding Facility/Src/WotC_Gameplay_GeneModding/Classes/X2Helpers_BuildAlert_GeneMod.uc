@@ -47,7 +47,6 @@ static function GM_UIGeneModOpCanceled(StateObjectReference UnitRef, X2AbilityTe
 simulated function NewGMAvailablePopupCB(Name eAction, out DynamicPropertySet AlertData, optional bool bInstant = false)
 {
 	local XComGameStateHistory History;
-	local XComGameState NewGameState;
 	local XComGameState_HeadquartersXCom XComHQ;
 	local XComGameState_FacilityXCom FacilityState;
 
@@ -58,7 +57,7 @@ simulated function NewGMAvailablePopupCB(Name eAction, out DynamicPropertySet Al
 		FacilityState = XComHQ.GetFacilityByName('AdvancedWarfareCenter');
 
 		if( `GAME.GetGeoscape().IsScanning() )
-			StrategyMap2D.ToggleScan();
+			`HQPRES.StrategyMap2D.ToggleScan();
 
 		FacilityState.GetMyTemplate().SelectFacilityFn(FacilityState.GetReference(), true);
 	}
