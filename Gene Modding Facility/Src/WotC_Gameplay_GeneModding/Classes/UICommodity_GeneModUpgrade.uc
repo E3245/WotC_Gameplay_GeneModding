@@ -298,6 +298,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 	local StrategyCost EmptyCost;
 	local StrategyRequirement EmptyReq;
 	local Tracker Track;
+	local string sAugErrorMsg;
 
 	m_arrUnlocks = GetUnlocks(category);
 	m_arrUnlocks.Sort(SortUnlocksByPrerequisite);
@@ -314,7 +315,18 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 //		GMComm.Image = m_arrUnlocks[iUnlock].GetImage();
 		GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 
-		if (IsItemPurchased(m_arrUnlocks[iUnlock]))
+		 //	Iridar test start
+		sAugErrorMsg = m_arrUnlocks[iUnlock].GetAugmentedErrorMessage(UnitState);
+		if (sAugErrorMsg != "")
+		{
+			GMComm.Title = GMComm.Title;
+			GMComm.Cost = EmptyCost;
+			GMComm.Requirements = EmptyReq;
+			GMComm.OrderHours = -1;
+			GMComm.Desc = sAugErrorMsg;
+		} 
+		else   // Iridar test end
+		if (IsItemPurchased(m_arrUnlocks[iUnlock])) 
 		{
 			GMComm.Title = class'UIItemCard'.default.m_strPurchased @ GMComm.Title;
 			GMComm.Cost = EmptyCost;

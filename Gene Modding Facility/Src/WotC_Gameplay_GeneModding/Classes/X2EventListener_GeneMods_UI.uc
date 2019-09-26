@@ -1,5 +1,7 @@
 class X2EventListener_GeneMods_UI extends X2EventListener;
 
+const bLog = true;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -18,6 +20,9 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 
 	Template.AddCHEvent('OnResearchReport', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 	Template.AddCHEvent('UpgradeCompleted', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
+
+	Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
+	`LOG("Register Event OnPostMissionUpdateSoldierHealing",, 'RPG');
 
 	Template.RegisterInStrategy = true;
 	`LOG("Register Event CustomizeStatusStringsSeparate",, 'WotC_Gameplay_GeneModding');
@@ -58,66 +63,101 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 
 static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
-	local XComGameState_Tech				TechState;
-	local X2StrategyElementTemplateManager  StrategyElementTemplateMgr;
 	local X2GeneModTemplate					GeneModTemplate;
-	local array<X2StrategyElementTemplate>	GeneModTemplates;
-	local bool								bTechsAreUnlocked;
-	local bool								bGeneModFacilityAvailable;
-	local int i;
+	local array<X2GeneModTemplate>			GeneModTemplates;
+	local XComGameState_HeadquartersXCom	XComHQ;
 
-	//TechState = XComGameState_Tech(EventData);
+	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
 
-	//`LOG("Research complete (Event Data): " @ TechState.GetMyTemplateName(), , 'IRIPOPUP');
-
-	StrategyElementTemplateMgr = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
-	GeneModTemplates = StrategyElementTemplateMgr.GetAllTemplatesOfClass(class'X2GeneModTemplate');
-	`LOG("Pulled Gene Mod templates: " @ GeneModTemplates.Length, , 'IRIPOPUP');
-
-	bGeneModFacilityAvailable = `XCOMHQ.HasFacilityUpgradeByName('Infirmary_GeneModdingChamber');
-	
-	for (i=0; i < GeneModTemplates.Length; i++)
-	{
-		GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
-
-		`LOG("=================================================", , 'IRIPOPUP');
-		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, , 'IRIPOPUP');
-
-		bTechsAreUnlocked = static.GeneModResearchUnlocked(GeneModTemplate);
-
-		if (bTechsAreUnlocked && bGeneModFacilityAvailable)
-		{
-			`LOG("All tech requirements for this Gene Mod are complete, it's now available, showing popup!", , 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", , 'IRIPOPUP');
-			//Display popup here
-			class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
-		}
-	}
-
-	return ELR_NoInterrupt;
-}
-
-private static function bool GeneModResearchUnlocked(X2GeneModTemplate GeneModTemplate)
-{
-	local XComGameState_HeadquartersXCom XComHQ;
-	local int j;
+	`LOG("Show Gene Mod popups triggered by event: " @ EventID, bLog, 'IRIPOPUP');
+	`LOG("Pulled this many Gene Mod templates: " @ GeneModTemplates.Length, bLog, 'IRIPOPUP');
 
 	XComHQ = `XCOMHQ;
 
-	for (j = 0; j < GeneModTemplate.Requirements.RequiredTechs.Length; j++)
+	foreach GeneModTemplates(GeneModTemplate)
 	{
-		`LOG("It has tech requirement: " @ GeneModTemplate.Requirements.RequiredTechs[j],, 'IRIPOPUP');
+		`LOG("=================================================", bLog, 'IRIPOPUP');
+		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
 
-		if (XComHQ.IsTechResearched(GeneModTemplate.Requirements.RequiredTechs[j]))
+		if (XComHQ.MeetsEnoughRequirementsToBeVisible(GeneModTemplate.Requirements))
 		{
-			`LOG("It's already completed.", , 'IRIPOPUP');
+			`LOG("All requirements for this Gene Mod are complete, it's now available, showing popup!", bLog, 'IRIPOPUP');
+			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
+			//Display popup here
+			class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
 		}
-		else 
+		else
 		{
-			`LOG("It's NOT completed yet, will not show popup for this Gene Mod.",, 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", , 'IRIPOPUP');
-			return false;
+			`LOG("Not all requirements for this Gene Mod are complete yet, NOT showing popup.", bLog, 'IRIPOPUP');
+			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
 		}
 	}
-	return true;
+	return ELR_NoInterrupt;
+}
+
+static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit				UnitState;
+	local X2GeneModTemplate					GeneModTemplate;
+	local array<X2GeneModTemplate>			GeneModTemplates;
+	local array<X2GeneModTemplate>			RemovedGeneMods;
+	local XComGameState						NewGameState;
+	local string ErrMsg;
+
+	UnitState = XComGameState_Unit(EventSource);
+
+	`LOG("Post mission update triggered for: " @ UnitState.GetFullName(), bLog, 'IRIPOPUP');
+
+	if (UnitState != none)
+	{
+		GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb");
+		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+		foreach GeneModTemplates(GeneModTemplate)
+		{
+			`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
+
+			ErrMsg = GeneModTemplate.GetAugmentedErrorMessage(UnitState);
+			if (ErrMsg != "")
+			{	
+				`LOG("Soldier's Augments or Wounds prohibit this Gene Mod:", bLog, 'IRIPOPUP');
+				`LOG(" === " @ ErrMsg, bLog, 'IRIPOPUP');
+
+				if (GeneModTemplate.UnitHasGeneMod(UnitState))
+				{
+					`LOG("Soldier has this Gene Mod, disabling it.", bLog, 'IRIPOPUP');
+
+					//	Unit will not receive any AdditionalAbilities associated with this ability as well.
+					GeneModTemplate.DisableGeneModForUnit(UnitState);
+					RemovedGeneMods.AddItem(GeneModTemplate);
+					break;
+				}
+				else
+				{
+					`LOG("Soldier does not have this Gene Mod.", bLog, 'IRIPOPUP');
+				}
+			}
+			else
+			{
+				`LOG("Soldier does not have wounds or augments that would block this Gene Mod.", bLog, 'IRIPOPUP');
+			}
+		}
+	}
+	`LOG("Removed Gene Mods: " @ RemovedGeneMods.Length, bLog, 'IRIPOPUP');
+	if (RemovedGeneMods.Length > 0) 
+	{
+		//	TODO for E3245: show popup here.
+		//	ShowPopup(UnitState, RemovedGeneMods);
+
+		`LOG("Submitting game state.", bLog, 'IRIPOPUP');
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else 
+	{
+		`LOG("Cancelling game state.", bLog, 'IRIPOPUP');
+		`XCOMHISTORY.CleanupPendingGameState(NewGameState);
+	}
+
+	return ELR_NoInterrupt;
 }
