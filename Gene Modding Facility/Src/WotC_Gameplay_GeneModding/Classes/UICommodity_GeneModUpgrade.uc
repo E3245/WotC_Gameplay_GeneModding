@@ -7,6 +7,14 @@ struct Tracker
 	var int CommodityID;	
 };
 
+struct AugmentedBodyParts
+{
+    var bool Head;	//    Severed Body Part #: 0
+    var bool Torso;	//    Severed Body Part #: 1
+    var bool Arms;	//    Severed Body Part #: 2
+    var bool Legs;	//    Severed Body Part #: 3
+};
+
 var array<X2GeneModTemplate>			m_arrUnlocks;
 
 var X2GeneModTemplate					SelectedGeneMod;
@@ -22,6 +30,12 @@ var localized string					m_strGMDialogNegEnabledText;
 
 var localized string					m_strSoldierStatus;
 var localized string					m_strSoldierTimeLabel;
+
+var localized string					m_strErrorEyesAugmented;
+var localized string					m_strErrorTorsoAugmented;
+var localized string					m_strErrorArmsAugmented;
+var localized string					m_strErrorLegsAugmented;
+var localized string					m_strErrorSkinAugmented;
 
 //Borrowed from UISimpleCommodity and UIInventory
 
@@ -298,6 +312,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 	local StrategyCost EmptyCost;
 	local StrategyRequirement EmptyReq;
 	local Tracker Track;
+	local string sAugErrorMsg;
 
 	m_arrUnlocks = GetUnlocks(category);
 	m_arrUnlocks.Sort(SortUnlocksByPrerequisite);
@@ -314,7 +329,18 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 //		GMComm.Image = m_arrUnlocks[iUnlock].GetImage();
 		GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 
-		if (IsItemPurchased(m_arrUnlocks[iUnlock]))
+		/* //	Iridar test start
+		sAugErrorMsg = GetAugmentedErrorMessage(m_arrUnlocks[iUnlock]);
+		if (sAugErrorMsg != "")
+		{
+			GMComm.Title = GMComm.Title;
+			GMComm.Cost = EmptyCost;
+			GMComm.Requirements = EmptyReq;
+			GMComm.OrderHours = -1;
+			GMComm.Desc = sAugErrorMsg;
+		} 
+		else  */ // Iridar test end
+		if (IsItemPurchased(m_arrUnlocks[iUnlock])) 
 		{
 			GMComm.Title = class'UIItemCard'.default.m_strPurchased @ GMComm.Title;
 			GMComm.Cost = EmptyCost;
@@ -422,6 +448,88 @@ private function bool IsItemRestrictedByExistingMod(X2GeneModTemplate GeneMod)
 //	}
 //	
 	return false;
+}
+
+//	TODO for E3245: Use this function when displaying the list of potential Gene Mods for the soldier. 
+//	If this function returns "" then the Gene Mod can be used.
+//	Otherwise this function returns the localized string that you need to add to Gene Mod's description.
+private function string GetAugmentedErrorMessage(X2GeneModTemplate GeneModTemplate)
+{
+	local AugmentedBodyParts    Parts;
+
+	Parts = GetAugmentedBodyParts();
+
+	switch (GeneModTemplate.GeneCategory)
+	{
+		case 'GMCat_brain':
+			return "";
+		case 'GMCat_eyes':
+			if (Parts.Head) return default.m_strErrorEyesAugmented;
+			else return "";
+		case 'GMCat_chest':
+			if (Parts.Torso) return default.m_strErrorTorsoAugmented;
+			else return "";
+		case 'GMCat_arms':
+			if (Parts.Arms) return default.m_strErrorArmsAugmented;
+			else return "";
+		case 'GMCat_legs':
+			if (Parts.Legs) return default.m_strErrorLegsAugmented;
+			else return "";
+		case 'GMCat_skin':
+			if (GetAugmentedBodyPercent(Parts) > 0.5f) return default.m_strErrorSkinAugmented;
+			else return "";
+		default:
+			return "";	//	Gene Mods with unknown category are allowed by default.
+	}
+}
+
+//	Calcualte the perecent of the body that was augmented and return it as a value between 0 and 1.
+private function float GetAugmentedBodyPercent(AugmentedBodyParts Parts)
+{
+	return float(int(Parts.Head) + int(Parts.Torso) + int(Parts.Arms) + int(Parts.Legs)) / 4;
+}
+
+private function AugmentedBodyParts GetAugmentedBodyParts()
+{
+    local XComGameState_Item    ItemState;
+    local AugmentedBodyParts    Parts;
+    local UnitValue             SeveredBodyPart;
+
+    //    Try to get the Unit Value that's responsible for tracking which body parts were damaged beyond repair
+    //    and now need to be Augmented.
+    if (!UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart)) // if we fail to get the Unit Value
+    {
+        //    Set the value to -1, because "0" would be the default value
+        //    so even if the soldier's Head was fine
+        //    we'd think that it was damaged and the soldier needs a Head augmentation.
+        SeveredBodyPart.fValue = -1;
+    }
+    //    The Unit Value is removed from the soldier by the Augments mod once their respective body part is augmented,
+    //    so we check the soldier's Inventory Slots as well.
+    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationHead);
+    if (ItemState != none || SeveredBodyPart.fValue == 0)
+    {
+        Parts.Head = true;
+    }
+
+    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationTorso);
+    if (ItemState != none || SeveredBodyPart.fValue == 1)
+    {
+        Parts.Torso = true;
+    }
+
+    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationArms);
+    if (ItemState != none || SeveredBodyPart.fValue == 2)
+    {
+        Parts.Arms = true;
+    }
+
+    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationLegs);
+    if (ItemState != none || SeveredBodyPart.fValue == 3)
+    {
+        Parts.Legs = true;
+    }
+    return Parts;
 }
 
 simulated function int GetGMOrderDays(int BaseTimeToCompletion)

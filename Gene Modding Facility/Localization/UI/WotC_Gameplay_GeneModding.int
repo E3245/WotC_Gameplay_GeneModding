@@ -26,6 +26,12 @@ m_strGMCat4 = SKIN
 m_strGMCat5 = LEGS
 m_strSoldierStatus = %SKILL Operation
 
+m_strErrorEyesAugmented="This soldier's Eyes are augmented and cannot be genetically modified."
+m_strErrorTorsoAugmented="This soldier's Torso is augmented and cannot be genetically modified."
+m_strErrorArmsAugmented="This soldier's Arms are augmented and cannot be genetically modified."
+m_strErrorLegsAugmented="This soldier's Legs are augmented and cannot be genetically modified."
+m_strErrorSkinAugmented="More than 50% of this soldier's body is augmented, their skin cannot be genetically modified."
+
 [UIAlert_GeneMod]
 m_strNewGMAvailable=<XGParam:StrValue0/!TechName/>: New Gene Mod Available
 m_strSoldierGMHeader=ATTENTION

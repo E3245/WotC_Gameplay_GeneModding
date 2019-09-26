@@ -27,64 +27,11 @@ var config int GeneModLimitCat5;
 
 var config bool IntegratedWarfare_BoostGeneStats;
 
-struct AugmentedBodyParts
-{
-    var bool Head;    //    Severed Body Part #: 0
-    var bool Torso;    //    Severed Body Part #: 1
-    var bool Arms;    //    Severed Body Part #: 2
-    var bool Legs;    //    Severed Body Part #: 3
-};
-
 /* TODO for Iridar
-1) Can't put certain Gene Mods on certain units. Handled by Gene Mod UI during the step of displaying Gene Mod list. Recolor some bars red and add a line of text to the Gene Mod's description that this particular Gene Mod cannot be added because of this and that augment.
-
 2) On "squad returns to avenger" event, disable the Gene Mod associated with a destroyed body part and communicate that to the player. 
 
 3) Warning the player that a particular Gene Mod will be removed if they decide to equip a particular Augment on a perfectly healthy soldier that still normally has all their limbs, and disabling the Gene Mod afterwards.
 */
-
-static function AugmentedBodyParts GetAugmentedBodyParts(XComGameState_Unit UnitState)
-{
-    local XComGameState_Item    ItemState;
-    local AugmentedBodyParts    Parts;
-    local UnitValue                SeveredBodyPart;
-
-    //    Try to get the Unit Value that's responsible for tracking which body parts were damaged beyond repair
-    //    and now need to be Augmented.
-    if (!UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart)) // if we fail to get the Unit Value
-    {
-        //    Set the value to -1, because "0" would be the default value
-        //    so even if the soldier's Head was fine
-        //    we'd think that it was damaged and the soldier needs a Head augmentation.
-        SeveredBodyPart.fValue = -1;
-    }
-    //    The Unit Value is removed from the soldier by the Augments mod once their respective body part is augmented,
-    //    so we check the soldier's Inventory Slots as well.
-    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationHead);
-    if (ItemState != none || SeveredBodyPart.fValue == 0)
-    {
-        Parts.Head = true;
-    }
-
-    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationTorso);
-    if (ItemState != none || SeveredBodyPart.fValue == 1)
-    {
-        Parts.Torso = true;
-    }
-
-    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationArms);
-    if (ItemState != none || SeveredBodyPart.fValue == 2)
-    {
-        Parts.Arms = true;
-    }
-
-    ItemState = UnitState.GetItemInSlot(eInvSlot_AugmentationLegs);
-    if (ItemState != none || SeveredBodyPart.fValue == 3)
-    {
-        Parts.Legs = true;
-    }
-    return Parts;
-}
 
 /// <summary>
 /// This method is run if the player loads a saved game that was created prior to this DLC / Mod being installed, and allows the 
