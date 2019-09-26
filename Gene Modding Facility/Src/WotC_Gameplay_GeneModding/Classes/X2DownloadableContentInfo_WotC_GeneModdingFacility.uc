@@ -28,8 +28,6 @@ var config int GeneModLimitCat5;
 var config bool IntegratedWarfare_BoostGeneStats;
 
 /* TODO for Iridar
-2) On "squad returns to avenger" event, disable the Gene Mod associated with a destroyed body part and communicate that to the player. 
-
 3) Warning the player that a particular Gene Mod will be removed if they decide to equip a particular Augment on a perfectly healthy soldier that still normally has all their limbs, and disabling the Gene Mod afterwards.
 */
 
