@@ -63,24 +63,19 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 
 static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
-	local X2StrategyElementTemplateManager  StrategyElementTemplateMgr;
 	local X2GeneModTemplate					GeneModTemplate;
-	local array<X2StrategyElementTemplate>	GeneModTemplates;
+	local array<X2GeneModTemplate>			GeneModTemplates;
 	local XComGameState_HeadquartersXCom	XComHQ;
-	local int i;
 
-	StrategyElementTemplateMgr = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
-	GeneModTemplates = StrategyElementTemplateMgr.GetAllTemplatesOfClass(class'X2GeneModTemplate');
+	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
 
 	`LOG("Show Gene Mod popups triggered by event: " @ EventID, bLog, 'IRIPOPUP');
 	`LOG("Pulled this many Gene Mod templates: " @ GeneModTemplates.Length, bLog, 'IRIPOPUP');
 
 	XComHQ = `XCOMHQ;
 
-	for (i=0; i < GeneModTemplates.Length; i++)
+	foreach GeneModTemplates(GeneModTemplate)
 	{
-		GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
-
 		`LOG("=================================================", bLog, 'IRIPOPUP');
 		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
 
@@ -103,12 +98,10 @@ static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Obje
 static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit				UnitState;
-	local X2StrategyElementTemplateManager  StrategyElementTemplateMgr;
 	local X2GeneModTemplate					GeneModTemplate;
+	local array<X2GeneModTemplate>			GeneModTemplates;
 	local array<X2GeneModTemplate>			RemovedGeneMods;
-	local array<X2StrategyElementTemplate>	GeneModTemplates;
 	local XComGameState						NewGameState;
-	local int i, j;
 	local string ErrMsg;
 
 	UnitState = XComGameState_Unit(EventSource);
@@ -117,36 +110,30 @@ static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object Eve
 
 	if (UnitState != none)
 	{
-		StrategyElementTemplateMgr = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
-		GeneModTemplates = StrategyElementTemplateMgr.GetAllTemplatesOfClass(class'X2GeneModTemplate');
+		GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb");
 		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 
-		for (i=0; i < GeneModTemplates.Length; i++)
+		foreach GeneModTemplates(GeneModTemplate)
 		{
-			GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
-
 			`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
 
-			ErrMsg = class'UICommodity_GeneModUpgrade'.static.GetAugmentedErrorMessage(UnitState, GeneModTemplate);
+			ErrMsg = GeneModTemplate.GetAugmentedErrorMessage(UnitState);
 			if (ErrMsg != "")
 			{	
 				`LOG("Soldier's Augments or Wounds prohibit this Gene Mod:", bLog, 'IRIPOPUP');
 				`LOG(" === " @ ErrMsg, bLog, 'IRIPOPUP');
 
-				for (j = 0; j < UnitState.AWCAbilities.Length; j++)
+				if (GeneModTemplate.UnitHasGeneMod(UnitState))
 				{
-					if (UnitState.AWCAbilities[j].AbilityType.AbilityName == GeneModTemplate.AbilityName)
-					{
-						`LOG("Soldier has this Gene Mod, disabling it.", bLog, 'IRIPOPUP');
+					`LOG("Soldier has this Gene Mod, disabling it.", bLog, 'IRIPOPUP');
 
-						//	Unit will not receive any AdditionalAbilities associated with this ability as well.
-						UnitState.AWCAbilities[j].bUnlocked = false;
-						RemovedGeneMods.AddItem(GeneModTemplate);
-						break;
-					}
+					//	Unit will not receive any AdditionalAbilities associated with this ability as well.
+					GeneModTemplate.DisableGeneModForUnit(UnitState);
+					RemovedGeneMods.AddItem(GeneModTemplate);
+					break;
 				}
-				if (j == UnitState.AWCAbilities.Length)
+				else
 				{
 					`LOG("Soldier does not have this Gene Mod.", bLog, 'IRIPOPUP');
 				}

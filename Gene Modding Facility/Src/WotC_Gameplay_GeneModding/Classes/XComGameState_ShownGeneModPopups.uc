@@ -4,7 +4,7 @@ var array<Name> DisplayedPopups;
 
 const bLog = false;
 
-public static function XComGameState_ShownGeneModPopups GetOrCreate(out XComGameState NewGameState)
+private static function XComGameState_ShownGeneModPopups GetOrCreate(out XComGameState NewGameState)
 {
 	local XComGameStateHistory				History;
 	local XComGameState_ShownGeneModPopups	StateObject;
