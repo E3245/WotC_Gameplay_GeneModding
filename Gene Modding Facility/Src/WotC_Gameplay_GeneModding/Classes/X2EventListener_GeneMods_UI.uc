@@ -1,5 +1,7 @@
 class X2EventListener_GeneMods_UI extends X2EventListener;
 
+const bLog = true;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -58,66 +60,43 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 
 static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
-	local XComGameState_Tech				TechState;
 	local X2StrategyElementTemplateManager  StrategyElementTemplateMgr;
 	local X2GeneModTemplate					GeneModTemplate;
 	local array<X2StrategyElementTemplate>	GeneModTemplates;
-	local bool								bTechsAreUnlocked;
-	local bool								bGeneModFacilityAvailable;
+	local XComGameState_HeadquartersXCom	XComHQ;
 	local int i;
-
-	//TechState = XComGameState_Tech(EventData);
-
-	//`LOG("Research complete (Event Data): " @ TechState.GetMyTemplateName(), , 'IRIPOPUP');
 
 	StrategyElementTemplateMgr = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
 	GeneModTemplates = StrategyElementTemplateMgr.GetAllTemplatesOfClass(class'X2GeneModTemplate');
-	`LOG("Pulled Gene Mod templates: " @ GeneModTemplates.Length, , 'IRIPOPUP');
 
-	bGeneModFacilityAvailable = `XCOMHQ.HasFacilityUpgradeByName('Infirmary_GeneModdingChamber');
-	
-	for (i=0; i < GeneModTemplates.Length; i++)
-	{
-		GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
-
-		`LOG("=================================================", , 'IRIPOPUP');
-		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, , 'IRIPOPUP');
-
-		bTechsAreUnlocked = static.GeneModResearchUnlocked(GeneModTemplate);
-
-		if (bTechsAreUnlocked && bGeneModFacilityAvailable)
-		{
-			`LOG("All tech requirements for this Gene Mod are complete, it's now available, showing popup!", , 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", , 'IRIPOPUP');
-			//Display popup here
-			class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
-		}
-	}
-
-	return ELR_NoInterrupt;
-}
-
-private static function bool GeneModResearchUnlocked(X2GeneModTemplate GeneModTemplate)
-{
-	local XComGameState_HeadquartersXCom XComHQ;
-	local int j;
+	`LOG("Show Gene Mod popups triggered by event: " @ EventID, bLog, 'IRIPOPUP');
+	`LOG("Pulled this many Gene Mod templates: " @ GeneModTemplates.Length, bLog, 'IRIPOPUP');
 
 	XComHQ = `XCOMHQ;
 
-	for (j = 0; j < GeneModTemplate.Requirements.RequiredTechs.Length; j++)
-	{
-		`LOG("It has tech requirement: " @ GeneModTemplate.Requirements.RequiredTechs[j],, 'IRIPOPUP');
+	//	This is set in the Requirements for each individual Gene Mod.
+	//if(XComHQ.HasFacilityUpgradeByName('Infirmary_GeneModdingChamber'))
+	//{
+		for (i=0; i < GeneModTemplates.Length; i++)
+		{
+			GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
 
-		if (XComHQ.IsTechResearched(GeneModTemplate.Requirements.RequiredTechs[j]))
-		{
-			`LOG("It's already completed.", , 'IRIPOPUP');
+			`LOG("=================================================", bLog, 'IRIPOPUP');
+			`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName @ "Meets facility reqs: " @ XComHQ.MeetsFacilityRequirements(GeneModTemplate.Requirements.RequiredFacilities) @ GeneModTemplate.Requirements.RequiredFacilities.Length @ GeneModTemplate.Requirements.RequiredFacilities[0] @ GeneModTemplate.Requirements.bVisibleIfFacilitiesNotMet, bLog, 'IRIPOPUP');
+
+			if (XComHQ.MeetsEnoughRequirementsToBeVisible(GeneModTemplate.Requirements))
+			{
+				`LOG("All requirements for this Gene Mod are complete, it's now available, showing popup!", bLog, 'IRIPOPUP');
+				`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
+				//Display popup here
+				class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
+			}
+			else
+			{
+				`LOG("Not all requirements for this Gene Mod are complete yet, NOT showing popup.", bLog, 'IRIPOPUP');
+				`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
+			}
 		}
-		else 
-		{
-			`LOG("It's NOT completed yet, will not show popup for this Gene Mod.",, 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", , 'IRIPOPUP');
-			return false;
-		}
-	}
-	return true;
+	//}
+	return ELR_NoInterrupt;
 }
