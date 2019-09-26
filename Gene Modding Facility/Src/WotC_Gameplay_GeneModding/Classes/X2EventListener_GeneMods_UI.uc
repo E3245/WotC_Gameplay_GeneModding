@@ -74,29 +74,25 @@ static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Obje
 
 	XComHQ = `XCOMHQ;
 
-	//	This is set in the Requirements for each individual Gene Mod.
-	//if(XComHQ.HasFacilityUpgradeByName('Infirmary_GeneModdingChamber'))
-	//{
-		for (i=0; i < GeneModTemplates.Length; i++)
+	for (i=0; i < GeneModTemplates.Length; i++)
+	{
+		GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
+
+		`LOG("=================================================", bLog, 'IRIPOPUP');
+		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName @ "Meets facility reqs: " @ XComHQ.MeetsFacilityRequirements(GeneModTemplate.Requirements.RequiredFacilities) @ GeneModTemplate.Requirements.RequiredFacilities.Length @ GeneModTemplate.Requirements.RequiredFacilities[0] @ GeneModTemplate.Requirements.bVisibleIfFacilitiesNotMet, bLog, 'IRIPOPUP');
+
+		if (XComHQ.MeetsEnoughRequirementsToBeVisible(GeneModTemplate.Requirements))
 		{
-			GeneModTemplate = X2GeneModTemplate(GeneModTemplates[i]);
-
-			`LOG("=================================================", bLog, 'IRIPOPUP');
-			`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName @ "Meets facility reqs: " @ XComHQ.MeetsFacilityRequirements(GeneModTemplate.Requirements.RequiredFacilities) @ GeneModTemplate.Requirements.RequiredFacilities.Length @ GeneModTemplate.Requirements.RequiredFacilities[0] @ GeneModTemplate.Requirements.bVisibleIfFacilitiesNotMet, bLog, 'IRIPOPUP');
-
-			if (XComHQ.MeetsEnoughRequirementsToBeVisible(GeneModTemplate.Requirements))
-			{
-				`LOG("All requirements for this Gene Mod are complete, it's now available, showing popup!", bLog, 'IRIPOPUP');
-				`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
-				//Display popup here
-				class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
-			}
-			else
-			{
-				`LOG("Not all requirements for this Gene Mod are complete yet, NOT showing popup.", bLog, 'IRIPOPUP');
-				`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
-			}
+			`LOG("All requirements for this Gene Mod are complete, it's now available, showing popup!", bLog, 'IRIPOPUP');
+			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
+			//Display popup here
+			class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
 		}
-	//}
+		else
+		{
+			`LOG("Not all requirements for this Gene Mod are complete yet, NOT showing popup.", bLog, 'IRIPOPUP');
+			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
+		}
+	}
 	return ELR_NoInterrupt;
 }
