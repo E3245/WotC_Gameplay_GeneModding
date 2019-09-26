@@ -26,11 +26,18 @@ m_strGMCat4 = SKIN
 m_strGMCat5 = LEGS
 m_strSoldierStatus = %SKILL Operation
 
+[X2GeneModTemplate]
 m_strErrorEyesAugmented="This soldier's Eyes are augmented and cannot be genetically modified."
 m_strErrorTorsoAugmented="This soldier's Torso is augmented and cannot be genetically modified."
 m_strErrorArmsAugmented="This soldier's Arms are augmented and cannot be genetically modified."
 m_strErrorLegsAugmented="This soldier's Legs are augmented and cannot be genetically modified."
 m_strErrorSkinAugmented="More than 50% of this soldier's body is augmented, their skin cannot be genetically modified."
+
+m_strDisabledByAugment_Eyes="Augmenting this soldier's Eyes will disable their Eyes Gene Mod."
+m_strDisabledByAugment_Torso="Augmenting this soldier's Torso will disable their Chest Gene Mod."
+m_strDisabledByAugment_Arms="Augmenting this soldier's Arms will disable their Arms Gene Mod."
+m_strDisabledByAugment_Legs="Augmenting this soldier's Legs will disable their Legs Gene Mod."
+m_strDisabledByAugment_Skin="Augmenting this soldier any further will disable their Skin Gene Mod."
 
 [UIAlert_GeneMod]
 m_strNewGMAvailable=<XGParam:StrValue0/!TechName/>: New Gene Mod Available

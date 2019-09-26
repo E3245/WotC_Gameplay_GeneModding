@@ -112,6 +112,9 @@
     <Content Include="Src\WotC_Gameplay_GeneModding\Classes\UIInventory_ListItem_Custom.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\WotC_Gameplay_GeneModding\Classes\UIScreenListener_AugmentGeneMod.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\WotC_Gameplay_GeneModding\Classes\UIStatList_GM.uc">
       <SubType>Content</SubType>
     </Content>
@@ -140,6 +143,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\WotC_Gameplay_GeneModding\Classes\XComGameState_HeadquartersProjectGeneModOperation.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_Gameplay_GeneModding\Classes\XComGameState_ShownGeneModPopups.uc">
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
