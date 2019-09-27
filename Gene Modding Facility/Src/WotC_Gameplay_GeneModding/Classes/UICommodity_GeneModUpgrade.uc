@@ -313,18 +313,17 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 	{
 		GMComm.Title = m_arrUnlocks[iUnlock].GetDisplayName();
 //		GMComm.Image = m_arrUnlocks[iUnlock].GetImage();
-		GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 
-		//	TODO for E3245: Use this function in a proper way.
-		//	Iridar' placeholder message replacer.
+
+		// If a soldier has an augmentation in a particular slot, return a message.
 		sAugErrorMsg = m_arrUnlocks[iUnlock].GetGMPreventedByAugmentationMessage(UnitState);
 		if (sAugErrorMsg != "")
 		{
-			GMComm.Title = GMComm.Title;
+			GMComm.Title = m_strRestricted @ GMComm.Title;
 			GMComm.Cost = EmptyCost;
 			GMComm.Requirements = EmptyReq;
 			GMComm.OrderHours = -1;
-			GMComm.Desc = sAugErrorMsg;
+			GMComm.Desc = class'UIUtilities_Text'.static.GetColoredText(sAugErrorMsg, eUIState_Bad) $ "\n" $ m_arrUnlocks[iUnlock].GetSummary();
 		} 
 		else   // Iridar end
 		if (IsItemPurchased(m_arrUnlocks[iUnlock])) 
@@ -333,6 +332,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 			GMComm.Cost = EmptyCost;
 			GMComm.Requirements = EmptyReq;
 			GMComm.OrderHours = -1;
+			GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 		}
 		else if (!IsItemPurchased(m_arrUnlocks[iUnlock]) && IsItemRestrictedByExistingMod(m_arrUnlocks[iUnlock]))
 		{
@@ -340,6 +340,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 			GMComm.Cost = EmptyCost;
 			GMComm.Requirements = EmptyReq;
 			GMComm.OrderHours = -1;
+			GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 		}
 		if (!IsItemPurchased(m_arrUnlocks[iUnlock]) && CheckIfPurchasedCategory(m_arrUnlocks[iUnlock]))
 		{
@@ -347,12 +348,14 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 			GMComm.Cost = EmptyCost;
 			GMComm.Requirements = EmptyReq;
 			GMComm.OrderHours = -1;
+			GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 		}
 		else if (!IsItemPurchased(m_arrUnlocks[iUnlock]))
 		{
 			GMComm.Cost = m_arrUnlocks[iUnlock].Cost;
 			GMComm.Requirements = m_arrUnlocks[iUnlock].Requirements;
 			GMComm.OrderHours = GetGMOrderDays(m_arrUnlocks[iUnlock].BaseTimeToCompletion);
+			GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 		}
 
 		Track.GeneModID = arrTracker.Length;

@@ -147,7 +147,7 @@ public static function int UnitHasGeneMod(const XComGameState_Unit UnitState)
 	return 0;
 }
 
-//	TODO for E3245: Use this function when displaying the list of potential Gene Mods for the soldier in UICommodity_GeneModUpgrade.
+//	Use this function when displaying the list of potential Gene Mods for the soldier in UICommodity_GeneModUpgrade.
 //	If this function returns "" then the Gene Mod can be used.
 //	Otherwise this function returns the localized string that you need to add to Gene Mod's description.
 public static function string GetGMPreventedByAugmentationMessage(const XComGameState_Unit Unit)
@@ -294,6 +294,7 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 	local XComGameState				NewGameState;
 	local XComGameState_Unit 		NewUnitState;
 	local string					sErrMsg;
+	local TDialogueBoxData			DialogData;
 
 	GeneModTemplates = GetGeneModTemplates();
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
@@ -323,7 +324,13 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 			{
 				//	TODO for E3245
 				//	Show popup here informing the player that this Gene Mod has been disabled due to Augmentation or loss of limb.
-				//	ShowPopup(GeneModTemplate, NewUnitState, sErrMsg);
+				DialogData.eType = eDialog_Alert;
+				DialogData.strTitle = class'UIScreenListener_AugmentGeneMod'.default.sWarnTitle;
+				DialogData.strText = `XEXPAND.ExpandString(sErrMsg);
+
+				DialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericContinue;
+
+				`PRESBASE.UIRaiseDialog(DialogData);
 
 				GeneModTemplate.DisableGeneModForUnit(NewUnitState);
 				bChangedSomething = true;

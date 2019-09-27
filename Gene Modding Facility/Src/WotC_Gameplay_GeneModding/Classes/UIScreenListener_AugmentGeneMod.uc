@@ -1,5 +1,7 @@
 class UIScreenListener_AugmentGeneMod extends UIScreenListener;
 
+var localized string sWarnTitle;
+
 //	This function triggers when the player enters Augmentation Screen for a soldier.
 //	It will cycle through all Gene Mods currently active on the soldier, and if any of them can be potentially disabled by Augmentation,
 //	we display a popup with a warning message for each individual Gene Mod.
@@ -10,6 +12,7 @@ event OnInit(UIScreen Screen)
 	local X2GeneModTemplate			GeneModTemplate;
 	local array<X2GeneModTemplate>	GeneModTemplates;
 	local string					sWarnMsg;
+	local TDialogueBoxData DialogData;
 
 	//`LOG("Gene Mod UISL Triggered by screen: " @  Screen.Class,, 'GMUISL');
 
@@ -24,9 +27,14 @@ event OnInit(UIScreen Screen)
 			sWarnMsg = GeneModTemplate.GetGMCanBeDisabledByAugmentWarningMessage(UnitState);
 			if (sWarnMsg != "")
 			{
-				//	TODO for E3245
 				//	Display a popup here, warning the soldier that this particular Gene Mod can be potentially disabled by Augmentation.
-				//	ShowPopup(sWarnMsg);
+				DialogData.eType = eDialog_Normal;
+				DialogData.strTitle = sWarnTitle;
+				DialogData.strText = `XEXPAND.ExpandString(sWarnMsg);
+
+				DialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericContinue;
+
+				`PRESBASE.UIRaiseDialog(DialogData);
 
 				//	Placeholder popup
 				//`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');

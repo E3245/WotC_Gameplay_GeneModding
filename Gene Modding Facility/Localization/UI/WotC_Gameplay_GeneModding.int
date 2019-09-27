@@ -62,3 +62,6 @@ m_strGrantsAbility="GRANTS ABILITY"
 
 [X2DownloadableContentInfo_WotC_GeneModdingFacility]
 GeneModEventLabel="%CLASSNAME GENE MOD:"
+
+[UIScreenListener_AugmentGeneMod]
+sWarnTitle="ATTENTION"

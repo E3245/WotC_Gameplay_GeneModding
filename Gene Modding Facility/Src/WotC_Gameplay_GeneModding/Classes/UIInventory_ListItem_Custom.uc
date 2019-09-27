@@ -6,14 +6,33 @@ class UIInventory_ListItem_Custom extends UIInventory_ListItem;
 simulated function RealizeDisabledState()
 {
 	local bool bIsDisabled;
+	local string Message;
 	local UICommodity_GeneModUpgrade GMCommScreen;
+	local XComGameState_Unit UnitState;
 	local int GMIndex;
 
 	if( ClassIsChildOf(Screen.Class, class'UICommodity_GeneModUpgrade') )
 	{
+		//Grab Screen
 		GMCommScreen = UICommodity_GeneModUpgrade(Screen);
+		//Initialize UnitState
+		UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(GMCommScreen.m_UnitRef.ObjectID));
+		//Grab Current Commodity
 		GMIndex = GMCommScreen.GetGeneModIndexFromCommodity(ItemComodity);
-		bIsDisabled = !GMCommScreen.MeetsItemReqs(ItemComodity) || GMCommScreen.IsItemPurchased(GMCommScreen.arrGeneMod_Master[GMIndex]) || GMCommScreen.CheckIfPurchasedCategory(GMCommScreen.arrGeneMod_Master[GMIndex]);
+
+		//Disable if any of these conditions are met
+		bIsDisabled = !GMCommScreen.MeetsItemReqs(ItemComodity) || 
+		GMCommScreen.IsItemPurchased(GMCommScreen.arrGeneMod_Master[GMIndex]) || 
+		GMCommScreen.CheckIfPurchasedCategory(GMCommScreen.arrGeneMod_Master[GMIndex]);
+
+		//We have to do this check separately
+		//Don't do it unless the bool is still false
+		if (!bIsDisabled)
+		{
+			Message = GMCommScreen.arrGeneMod_Master[GMIndex].GetGMPreventedByAugmentationMessage(UnitState);
+			if (Message != "")
+				bIsDisabled = true;
+		}
 	}
 
 	SetDisabled(bIsDisabled);
