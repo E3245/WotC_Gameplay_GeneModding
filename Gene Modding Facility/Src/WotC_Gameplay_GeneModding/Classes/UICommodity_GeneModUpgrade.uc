@@ -314,6 +314,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 		GMComm.Title = m_arrUnlocks[iUnlock].GetDisplayName();
 //		GMComm.Image = m_arrUnlocks[iUnlock].GetImage();
 
+<<<<<<< HEAD
 
 		// If a soldier has an augmentation in a particular slot, return a message.
 		sAugErrorMsg = m_arrUnlocks[iUnlock].GetGMPreventedByAugmentationMessage(UnitState);
