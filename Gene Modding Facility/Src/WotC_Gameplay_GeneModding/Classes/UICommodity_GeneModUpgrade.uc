@@ -315,8 +315,9 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 //		GMComm.Image = m_arrUnlocks[iUnlock].GetImage();
 		GMComm.Desc = m_arrUnlocks[iUnlock].GetSummary();
 
-		 //	Iridar test start
-		sAugErrorMsg = m_arrUnlocks[iUnlock].GetAugmentedErrorMessage(UnitState);
+		//	TODO for E3245: Use this function in a proper way.
+		//	Iridar' placeholder message replacer.
+		sAugErrorMsg = m_arrUnlocks[iUnlock].GetGMPreventedByAugmentationMessage(UnitState);
 		if (sAugErrorMsg != "")
 		{
 			GMComm.Title = GMComm.Title;
@@ -325,7 +326,7 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 			GMComm.OrderHours = -1;
 			GMComm.Desc = sAugErrorMsg;
 		} 
-		else   // Iridar test end
+		else   // Iridar end
 		if (IsItemPurchased(m_arrUnlocks[iUnlock])) 
 		{
 			GMComm.Title = class'UIItemCard'.default.m_strPurchased @ GMComm.Title;
