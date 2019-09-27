@@ -1,7 +1,5 @@
 class X2EventListener_GeneMods_UI extends X2EventListener;
 
-const bLog = true;
-
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -21,8 +19,8 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 	Template.AddCHEvent('OnResearchReport', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 	Template.AddCHEvent('UpgradeCompleted', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 
-	Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
-	`LOG("Register Event OnPostMissionUpdateSoldierHealing",, 'RPG');
+	//	Replaced by X2DLCInfo::OnExitPostMissionSequence()
+	//Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
 
 	Template.RegisterInStrategy = true;
 	`LOG("Register Event CustomizeStatusStringsSeparate",, 'WotC_Gameplay_GeneModding');
@@ -61,6 +59,9 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 	return ELR_NoInterrupt;
 }
 
+//	This Event Listener runs whenever the player purchases a Facility Upgrade or a completes a Research.
+//	We intentionally don't check what triggered this Listener, in case some obscure Gene Mod adds some bullshit strategic requirements, like need to have a Shadow Chamber constructed first.
+//	Purpose: for each Gene Mod, display a "New Gene Mod Available" popup, but only once per campaign.
 static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
 	local X2GeneModTemplate					GeneModTemplate;
@@ -68,96 +69,32 @@ static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Obje
 	local XComGameState_HeadquartersXCom	XComHQ;
 
 	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
-
-	`LOG("Show Gene Mod popups triggered by event: " @ EventID, bLog, 'IRIPOPUP');
-	`LOG("Pulled this many Gene Mod templates: " @ GeneModTemplates.Length, bLog, 'IRIPOPUP');
-
 	XComHQ = `XCOMHQ;
 
 	foreach GeneModTemplates(GeneModTemplate)
 	{
-		`LOG("=================================================", bLog, 'IRIPOPUP');
-		`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
-
 		if (XComHQ.MeetsEnoughRequirementsToBeVisible(GeneModTemplate.Requirements))
 		{
-			`LOG("All requirements for this Gene Mod are complete, it's now available, showing popup!", bLog, 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
-			//Display popup here
 			class'XComGameState_ShownGeneModPopups'.static.DisplayPopupOnce(GeneModTemplate);
-		}
-		else
-		{
-			`LOG("Not all requirements for this Gene Mod are complete yet, NOT showing popup.", bLog, 'IRIPOPUP');
-			`LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", bLog, 'IRIPOPUP');
 		}
 	}
 	return ELR_NoInterrupt;
 }
 
+//	This Event Listener runs around the time a squad returns back to Avenger from a tactical mission, right before you see your squad walking towards the camera from the Skyranger.
+//	Augments mod has a similar Event Listener, but it uses ELD_Immediate, so it runs before this one. 
+//	Augments' listener will determine if a wounded soldier has "lost a limb" and now requires augmentation.
+//	This Event Listener triggers right after that, and will disable the Gene Mod associated with the "lost limb", and show a popup, informing the player.
+/*
 static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
-	local XComGameState_Unit				UnitState;
-	local X2GeneModTemplate					GeneModTemplate;
-	local array<X2GeneModTemplate>			GeneModTemplates;
-	local array<X2GeneModTemplate>			RemovedGeneMods;
-	local XComGameState						NewGameState;
-	local string ErrMsg;
+	local XComGameState_Unit UnitState;
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	`LOG("Post mission update triggered for: " @ UnitState.GetFullName(), bLog, 'IRIPOPUP');
-
 	if (UnitState != none)
 	{
-		GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
-		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb");
-		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
-
-		foreach GeneModTemplates(GeneModTemplate)
-		{
-			`LOG("Looking at Gene Mod template: " @ GeneModTemplate.DataName, bLog, 'IRIPOPUP');
-
-			ErrMsg = GeneModTemplate.GetAugmentedErrorMessage(UnitState);
-			if (ErrMsg != "")
-			{	
-				`LOG("Soldier's Augments or Wounds prohibit this Gene Mod:", bLog, 'IRIPOPUP');
-				`LOG(" === " @ ErrMsg, bLog, 'IRIPOPUP');
-
-				if (GeneModTemplate.UnitHasGeneMod(UnitState))
-				{
-					`LOG("Soldier has this Gene Mod, disabling it.", bLog, 'IRIPOPUP');
-
-					//	Unit will not receive any AdditionalAbilities associated with this ability as well.
-					GeneModTemplate.DisableGeneModForUnit(UnitState);
-					RemovedGeneMods.AddItem(GeneModTemplate);
-					break;
-				}
-				else
-				{
-					`LOG("Soldier does not have this Gene Mod.", bLog, 'IRIPOPUP');
-				}
-			}
-			else
-			{
-				`LOG("Soldier does not have wounds or augments that would block this Gene Mod.", bLog, 'IRIPOPUP');
-			}
-		}
+		class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
 	}
-	`LOG("Removed Gene Mods: " @ RemovedGeneMods.Length, bLog, 'IRIPOPUP');
-	if (RemovedGeneMods.Length > 0) 
-	{
-		//	TODO for E3245: show popup here.
-		//	ShowPopup(UnitState, RemovedGeneMods);
-
-		`LOG("Submitting game state.", bLog, 'IRIPOPUP');
-		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
-	}
-	else 
-	{
-		`LOG("Cancelling game state.", bLog, 'IRIPOPUP');
-		`XCOMHISTORY.CleanupPendingGameState(NewGameState);
-	}
-
 	return ELR_NoInterrupt;
-}
+}*/

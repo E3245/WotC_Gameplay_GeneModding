@@ -27,17 +27,29 @@ m_strGMCat5 = LEGS
 m_strSoldierStatus = %SKILL Operation
 
 [X2GeneModTemplate]
-m_strErrorEyesAugmented="This soldier's Eyes are augmented and cannot be genetically modified."
-m_strErrorTorsoAugmented="This soldier's Torso is augmented and cannot be genetically modified."
-m_strErrorArmsAugmented="This soldier's Arms are augmented and cannot be genetically modified."
-m_strErrorLegsAugmented="This soldier's Legs are augmented and cannot be genetically modified."
-m_strErrorSkinAugmented="More than 50% of this soldier's body is augmented, their skin cannot be genetically modified."
+m_str_GMPrevented_ByAugmentation_Eyes="This soldier's Eyes are augmented and cannot be genetically modified."
+m_str_GMPrevented_ByAugmentation_Torso="This soldier's Torso is augmented and cannot be genetically modified."
+m_str_GMPrevented_ByAugmentation_Arms="This soldier's Arms are augmented and cannot be genetically modified."
+m_str_GMPrevented_ByAugmentation_Legs="This soldier's Legs are augmented and cannot be genetically modified."
+m_str_GMPrevented_ByAugmentation_Skin="More than 50% of this soldier's body is augmented, their skin cannot be genetically modified."
 
-m_strDisabledByAugment_Eyes="Augmenting this soldier's Eyes will disable their Eyes Gene Mod."
-m_strDisabledByAugment_Torso="Augmenting this soldier's Torso will disable their Chest Gene Mod."
-m_strDisabledByAugment_Arms="Augmenting this soldier's Arms will disable their Arms Gene Mod."
-m_strDisabledByAugment_Legs="Augmenting this soldier's Legs will disable their Legs Gene Mod."
-m_strDisabledByAugment_Skin="Augmenting this soldier any further will disable their Skin Gene Mod."
+m_strCanBeDisabledByAugment_Eyes="Augmenting this soldier's Head will disable their Eyes Gene Mod."
+m_strCanBeDisabledByAugment_Torso="Augmenting this soldier's Torso will disable their Chest Gene Mod."
+m_strCanBeDisabledByAugment_Arms="Augmenting this soldier's Arms will disable their Arms Gene Mod."
+m_strCanBeDisabledByAugment_Legs="Augmenting this soldier's Legs will disable their Legs Gene Mod."
+m_strCanBeDisabledByAugment_Skin="Augmenting this soldier any further will disable their Skin Gene Mod."
+
+m_strHasBeenDisabledByWound_Eyes="Due to a grave wound sustained by this soldier, their Genetically Modified Eyes have been damaged beyond repair, and now must be replaced by Head Augmentation."
+m_strHasBeenDisabledByWound_Torso="Due to a grave wound sustained by this soldier, their Genetically Modified Chest has been damaged beyond repair, and now must be replaced by Torso Augmentation."
+m_strHasBeenDisabledByWound_Arms="Due to a grave wound sustained by this soldier, their Genetically Modified Arms have been damaged beyond repair, and now must be replaced by Arms Augmentation."
+m_strHasBeenDisabledByWound_Legs="Due to a grave wound sustained by this soldier, their Genetically Modified Legs have been damaged beyond repair, and now must be replaced by Legs Augmentation."
+m_strHasBeenDisabledByWound_Skin="Due to a grave wound sustained by this soldier, their Genetically Modified Skin has been damaged beyond repair, and now must be replaced by Augmentation."
+
+m_strHasBeenDisabledByAugment_Eyes="This soldier's Genetically Modified Eyes have been replaced by Head Augmentation."
+m_strHasBeenDisabledByAugment_Torso="This soldier's Genetically Modified Chest has been replaced by Torso Augmentation."
+m_strHasBeenDisabledByAugment_Arms="This soldier's Genetically Modified Arms have been replaced by Arms Augmentation."
+m_strHasBeenDisabledByAugment_Legs="This soldier's Genetically Modified Legs have been replaced by Legs Augmentation."
+m_strHasBeenDisabledByAugment_Skin="This soldier's Genetically Modified Skin has been replaced by Augmented body parts."
 
 [UIAlert_GeneMod]
 m_strNewGMAvailable=<XGParam:StrValue0/!TechName/>: New Gene Mod Available

@@ -27,9 +27,31 @@ var config int GeneModLimitCat5;
 
 var config bool IntegratedWarfare_BoostGeneStats;
 
-/* TODO for Iridar
-3) Warning the player that a particular Gene Mod will be removed if they decide to equip a particular Augment on a perfectly healthy soldier that still normally has all their limbs, and disabling the Gene Mod afterwards.
-*/
+//	This event runs when the squad returns to Avenger from a tactical mission.
+//	We cycle through squad members and if any of them sustained wounds that have 
+//	"destroyed" the limbs associated with their Gene Mods, we disable those Gene Mods 
+//	and inform the player with a popup message.
+static event OnExitPostMissionSequence()
+{
+	local XComGameState_Unit				UnitState;
+	local XComGameStateHistory				History;
+	local XComGameState_HeadquartersXCom	XComHQ;
+	local int i;
+
+	History = `XCOMHISTORY;
+	XComHQ = `XCOMHQ;
+
+	//`LOG("OnExitPostMissionSequence",, 'IRIPOPUP');
+
+	for (i = 0; i < XComHQ.Squad.Length; i++)
+	{
+		UnitState = XComGameState_Unit(History.GetGameStateForObjectID(XComHQ.Squad[i].ObjectID));
+
+		//`LOG("Displaying popup for squad member: " @  UnitState.GetFullName(),, 'IRIPOPUP');
+		class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
+	}
+}
+
 
 /// <summary>
 /// This method is run if the player loads a saved game that was created prior to this DLC / Mod being installed, and allows the 
