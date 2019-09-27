@@ -1,6 +1,6 @@
 class UIScreenListener_AugmentGeneMod extends UIScreenListener;
 
-<<<<<<< HEAD
+
 var localized string sWarnTitle;
 
 =======
@@ -15,7 +15,7 @@ event OnInit(UIScreen Screen)
 	local X2GeneModTemplate			GeneModTemplate;
 	local array<X2GeneModTemplate>	GeneModTemplates;
 	local string					sWarnMsg;
-<<<<<<< HEAD
+
 	local TDialogueBoxData DialogData;
 =======
 >>>>>>> b01b95a9a5bab380906e10c1cf8cf6ae207ecb45
@@ -33,7 +33,7 @@ event OnInit(UIScreen Screen)
 			sWarnMsg = GeneModTemplate.GetGMCanBeDisabledByAugmentWarningMessage(UnitState);
 			if (sWarnMsg != "")
 			{
-<<<<<<< HEAD
+
 				//	Display a popup here, warning the soldier that this particular Gene Mod can be potentially disabled by Augmentation.
 				DialogData.eType = eDialog_Normal;
 				DialogData.strTitle = sWarnTitle;
