@@ -455,19 +455,33 @@ simulated function array<X2GeneModTemplate> GetUnlocks(name Category)
 	local array<X2StrategyElementTemplate> StrategyTemplates;
 	local array<X2GeneModTemplate> UnlockTemplates;
 	local int i;
+	local bool bAddUnlock;
 
 	UnlockTemplates.Length = 0;
 
 	StrategyTemplateManager = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
 	StrategyTemplates = StrategyTemplateManager.GetAllTemplatesOfClass(class'X2GeneModTemplate');
+
 	for(i = 0; i < StrategyTemplates.Length; i++)
 	{
-		if (X2GeneModTemplate(StrategyTemplates[i]).AbilityName != '')
-			if (XComHQ.MeetsEnoughRequirementsToBeVisible(X2GeneModTemplate(StrategyTemplates[i]).Requirements))
-				if (X2GeneModTemplate(StrategyTemplates[i]).GeneCategory == Category)
-					UnlockTemplates.AddItem(X2GeneModTemplate(StrategyTemplates[i]));
+		//Reset bool
+		bAddUnlock = true;
 
+		//Evaluate each conditional and change the bool to false if any of them pass the check
+		if (X2GeneModTemplate(StrategyTemplates[i]).AbilityName == '')
+			bAddUnlock = false;
+
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.HideGeneModIfRequirementsNotMet)
+			if (!(XComHQ.MeetsEnoughRequirementsToBeVisible(X2GeneModTemplate(StrategyTemplates[i]).Requirements)))
+				bAddUnlock = false;				
+		
+		if (X2GeneModTemplate(StrategyTemplates[i]).GeneCategory != Category)
+			bAddUnlock = false;
+
+		if(bAddUnlock)
+			UnlockTemplates.AddItem(X2GeneModTemplate(StrategyTemplates[i]));
 	}
+
 	return UnlockTemplates;
 }
 
