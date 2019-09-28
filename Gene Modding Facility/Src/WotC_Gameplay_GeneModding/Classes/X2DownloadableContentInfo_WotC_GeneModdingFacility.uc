@@ -17,6 +17,8 @@ var config array<name> NegativeAbilityName;
 
 var config bool EnableNegativeAbilityOnProjectCancelled;
 
+var config bool HideGeneModIfRequirementsNotMet;
+
 var localized string GeneModEventLabel;
 
 var config int GeneModLimitCat1;
