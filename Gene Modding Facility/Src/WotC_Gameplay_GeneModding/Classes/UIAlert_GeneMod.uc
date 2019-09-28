@@ -109,7 +109,7 @@ simulated function BuildGeneNewModOpAvailableAlert(string TitleLabel)
 	local X2StrategyElementTemplateManager  StrategyElementTemplateMgr;
 	local X2GeneModTemplate					GeneModTemplate;
 	local X2AbilityTemplateManager			AbilityTemplateManager;
-	local X2AbilityTemplate					AbilityTemplate;
+//	local X2AbilityTemplate					AbilityTemplate;
 	local TAlertCompletedInfo				kInfo;
 	local XGParamTag						ParamTag;
 
@@ -119,9 +119,6 @@ simulated function BuildGeneNewModOpAvailableAlert(string TitleLabel)
 
 	if (GeneModTemplate != none)
 	{
-		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(GeneModTemplate.AbilityName);
-		
 		kInfo.strName = GeneModTemplate.GetDisplayName();
 		kInfo.strHeaderLabel = m_strResearchCompleteLabel;
 		kInfo.strBody = m_strNewGMAvailable;		
