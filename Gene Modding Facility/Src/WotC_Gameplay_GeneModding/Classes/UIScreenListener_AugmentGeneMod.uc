@@ -3,8 +3,6 @@ class UIScreenListener_AugmentGeneMod extends UIScreenListener;
 
 var localized string sWarnTitle;
 
-=======
->>>>>>> b01b95a9a5bab380906e10c1cf8cf6ae207ecb45
 //	This function triggers when the player enters Augmentation Screen for a soldier.
 //	It will cycle through all Gene Mods currently active on the soldier, and if any of them can be potentially disabled by Augmentation,
 //	we display a popup with a warning message for each individual Gene Mod.
@@ -17,8 +15,6 @@ event OnInit(UIScreen Screen)
 	local string					sWarnMsg;
 
 	local TDialogueBoxData DialogData;
-=======
->>>>>>> b01b95a9a5bab380906e10c1cf8cf6ae207ecb45
 
 	//`LOG("Gene Mod UISL Triggered by screen: " @  Screen.Class,, 'GMUISL');
 

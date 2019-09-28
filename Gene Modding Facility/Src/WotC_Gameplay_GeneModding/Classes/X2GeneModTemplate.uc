@@ -296,8 +296,6 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 	local string					sErrMsg;
 
 	local TDialogueBoxData			DialogData;
-=======
->>>>>>> b01b95a9a5bab380906e10c1cf8cf6ae207ecb45
 
 	GeneModTemplates = GetGeneModTemplates();
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
