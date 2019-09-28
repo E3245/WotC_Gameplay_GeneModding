@@ -70,8 +70,7 @@ simulated function OnPersonnelSelected(StaffUnitInfo UnitInfo)
 	Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitInfo.UnitRef.ObjectID));
 	
 	if (Unit.CanBeStaffed()
-		&& Unit.IsSoldier()
-		&& Unit.IsActive())
+		&& Unit.IsSoldier())
 	{
 		if(!(class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.static.IsDisallowedClass(Unit.GetSoldierClassTemplateName())))
 		{

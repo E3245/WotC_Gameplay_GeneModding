@@ -122,7 +122,7 @@ static function bool IsUnitValidForGMChamberSoldierSlot(XComGameState_StaffSlot 
 
 	if (Unit.CanBeStaffed()
 		&& Unit.IsSoldier()
-		&& Unit.IsActive()
+//		&& Unit.IsActive()
 		&& SlotState.GetMyTemplate().ExcludeClasses.Find(Unit.GetSoldierClassTemplateName()) == INDEX_NONE)
 	{
 		return true;
