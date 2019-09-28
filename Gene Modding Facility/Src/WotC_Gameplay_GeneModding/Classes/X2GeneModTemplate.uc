@@ -147,6 +147,68 @@ public static function int UnitHasGeneMod(const XComGameState_Unit UnitState)
 	return 0;
 }
 
+//	Returns the integer value used by Severed Body Part Unit Value in Augments mod for a limb associated with this Gene Mod.
+public static function int GetMyLimbIndex()
+{
+	switch (default.GeneCategory)
+	{
+		case 'GMCat_brain':
+			return -1;
+		case 'GMCat_eyes':
+			return 0;
+		case 'GMCat_chest':
+			return 1;
+		case 'GMCat_arms':
+			return 2;
+		case 'GMCat_legs':
+			return 3;
+		case 'GMCat_skin':
+			return -1;
+		default:
+			return -1;
+	}
+}
+
+public static function BodyParts GetAugmentedOrGeneModdedBodyParts(const XComGameState_Unit Unit)
+{
+    local BodyParts					Parts;
+	local array<X2GeneModTemplate>	GeneModTemplates;
+	local X2GeneModTemplate			GeneModTemplate;
+
+	Parts = GetAugmentedBodyParts(Unit);
+
+	GeneModTemplates = GetGeneModTemplates();
+
+	foreach GeneModTemplates(GeneModTemplate)
+	{
+		if (GeneModTemplate.UnitHasGeneMod(Unit) > 0)
+		{
+			switch (GeneModTemplate.GeneCategory)
+			{
+				case 'GMCat_brain':
+					break;
+				case 'GMCat_eyes':
+					Parts.Head = true;
+					break;
+				case 'GMCat_chest':
+					Parts.Torso = true;
+					break;
+				case 'GMCat_arms':
+					Parts.Arms = true;
+					break;
+				case 'GMCat_legs':
+					Parts.Legs = true;
+					break;
+				case 'GMCat_skin':
+					break;
+				default:
+					break;
+			}
+		}
+	}
+    return Parts;
+}
+
 //	Use this function when displaying the list of potential Gene Mods for the soldier in UICommodity_GeneModUpgrade.
 //	If this function returns "" then the Gene Mod can be used.
 //	Otherwise this function returns the localized string that you need to add to Gene Mod's description.
@@ -446,7 +508,7 @@ private static function BodyParts GetAugmentedBodyParts(XComGameState_Unit Unit)
     return Parts;
 }
 
-private static function BodyParts GetDestroyedBodyParts(XComGameState_Unit Unit)
+public static function BodyParts GetDestroyedBodyParts(XComGameState_Unit Unit)
 {
     local BodyParts				Parts;
     local UnitValue             SeveredBodyPart;

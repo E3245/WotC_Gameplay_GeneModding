@@ -29,6 +29,74 @@ var config int GeneModLimitCat5;
 
 var config bool IntegratedWarfare_BoostGeneStats;
 
+var localized string			str_SWO_OnlyMutant_Description;
+var localized string			str_SWO_OnlyMutant_Tooltip;
+var localized string			str_SWO_MutagenicGrowth_Description;
+var localized string			str_SWO_MutagenicGrowth_Tooltip;
+
+/*
+Todo for Iridar:
+1) Second Wave Option -> Losing a limb removes the Gene Mod. DONE
+2) Second Wave Option -> Gene Modding a lost limb restores it.
+3) Negative trait when cancelling Gene Mod.
+4) Berserk strategic
+*/
+
+//Accessed like this: `SecondWaveEnabled('GM_SWO_OnlyMutant')
+static function UpdateSecondWaveOptionsList()
+{
+	local array<Object>			UIShellDifficultyArray;
+	local Object				ArrayObject;
+	local UIShellDifficulty		UIShellDifficulty;
+    local SecondWaveOption		SWO_OnlyMutant, SWO_MutagenicGrowth;
+	local bool					bAugmentsModLoaded;
+	
+	SWO_MutagenicGrowth.ID = 'GM_SWO_MutagenicGrowth';
+	SWO_MutagenicGrowth.DifficultyValue = 0;
+	
+	bAugmentsModLoaded = DLCLoaded('Augmentations');
+	if (bAugmentsModLoaded)
+	{
+		SWO_OnlyMutant.ID = 'GM_SWO_OnlyMutant';
+		SWO_OnlyMutant.DifficultyValue = 0;
+
+		UIShellDifficultyArray = class'XComEngine'.static.GetClassDefaultObjects(class'UIShellDifficulty');
+		foreach UIShellDifficultyArray(ArrayObject)
+		{
+				UIShellDifficulty = UIShellDifficulty(ArrayObject);
+				UIShellDifficulty.SecondWaveOptions.AddItem(SWO_OnlyMutant);
+				UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_OnlyMutant_Description);
+				UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_OnlyMutant_Tooltip);
+		}
+	}
+	
+	UIShellDifficultyArray = class'XComEngine'.static.GetClassDefaultObjects(class'UIShellDifficulty');
+	foreach UIShellDifficultyArray(ArrayObject)
+	{
+		UIShellDifficulty = UIShellDifficulty(ArrayObject);
+		UIShellDifficulty.SecondWaveOptions.AddItem(SWO_MutagenicGrowth);
+		UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_MutagenicGrowth_Description);
+		UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_MutagenicGrowth_Tooltip);
+	}
+}
+
+static function bool DLCLoaded(name DLCName)
+{
+	local XComOnlineEventMgr	EventManager;
+	local int					Index;
+
+	EventManager = `ONLINEEVENTMGR;
+
+	for(Index = EventManager.GetNumDLC() - 1; Index >= 0; Index--)	
+	{
+		if(EventManager.GetDLCNames(Index) == DLCName)	
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 //	This event runs when the squad returns to Avenger from a tactical mission.
 //	We cycle through squad members and if any of them sustained wounds that have 
 //	"destroyed" the limbs associated with their Gene Mods, we disable those Gene Mods 
@@ -44,13 +112,23 @@ static event OnExitPostMissionSequence()
 	XComHQ = `XCOMHQ;
 
 	//`LOG("OnExitPostMissionSequence",, 'IRIPOPUP');
-
-	for (i = 0; i < XComHQ.Squad.Length; i++)
+	if (`SecondWaveEnabled('GM_SWO_OnlyMutant'))	//	Check if losing the limb due to a Grave Wound (Augments mod) should disable Gene Mod associated with that limb.
+	{	
+		`LOG("Only Mutant SWO is ENABLED, removing Gene Mods from delimbed soldiers. Squad: " @ XComHQ.Squad.Length,, 'IRISWO');
+		for (i = 0; i < XComHQ.Crew.Length; i++)
+		{
+			UnitState = XComGameState_Unit(History.GetGameStateForObjectID(XComHQ.Crew[i].ObjectID));
+			if (UnitState.IsSoldier())
+			{
+				`LOG("Processing unit: " @ UnitState.GetFullName() @ "ID:" @ XComHQ.Crew[i].ObjectID,, 'IRISWO');
+				//`LOG("Displaying popup for squad member: " @  UnitState.GetFullName(),, 'IRIPOPUP');
+				class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
+			}
+		}
+	}
+	else
 	{
-		UnitState = XComGameState_Unit(History.GetGameStateForObjectID(XComHQ.Squad[i].ObjectID));
-
-		//`LOG("Displaying popup for squad member: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-		class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
+		`LOG("Only Mutant SWO is NOT enabled, will not be removing Gene Mods from delimbed soldiers",, 'IRISWO');
 	}
 }
 
@@ -97,6 +175,7 @@ static event OnPostMission()
 static event OnPostTemplatesCreated()
 {
 	PatchFacility();
+	UpdateSecondWaveOptionsList();
 }
 
 static function PatchFacility() 

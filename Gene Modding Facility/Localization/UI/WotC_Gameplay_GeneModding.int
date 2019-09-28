@@ -63,5 +63,10 @@ m_strGrantsAbility="GRANTS ABILITY"
 [X2DownloadableContentInfo_WotC_GeneModdingFacility]
 GeneModEventLabel="%CLASSNAME GENE MOD:"
 
+str_SWO_OnlyMutant_Description="Only A Mutant: losing a Gene Modded limb due to a Grave Wound will disable that Gene Mod."
+str_SWO_OnlyMutant_Tooltip="Losing a Gene Modded limb due to a Grave Wound will disable that Gene Mod. Lost limbs must be restored with Augmentation or another Gene Mod (Requires Macrophagial Transgenesis SWO)."
+str_SWO_MutagenicGrowth_Description="Macrophagial Transgenesis: soldiers can be Gene Modded even while wounded."
+str_SWO_MutagenicGrowth_Tooltip="Soldiers can be Gene Modded even while wounded. Wounded soldier fully recovers once Gene Modding is complete. If Augments mod is enabled, Gene Mods can be used to restore lost limbs instead of Augments."
+
 [UIScreenListener_AugmentGeneMod]
 sWarnTitle="ATTENTION"

@@ -1,4 +1,4 @@
-class X2EventListener_GeneMods_UI extends X2EventListener;
+class X2EventListener_GeneMods_UI extends X2EventListener dependson(X2GeneModTemplate);
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -19,8 +19,7 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 	Template.AddCHEvent('OnResearchReport', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 	Template.AddCHEvent('UpgradeCompleted', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 
-	//	Replaced by X2DLCInfo::OnExitPostMissionSequence()
-	//Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
+	Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
 
 	Template.RegisterInStrategy = true;
 	`LOG("Register Event CustomizeStatusStringsSeparate",, 'WotC_Gameplay_GeneModding');
@@ -84,17 +83,190 @@ static protected function EventListenerReturn UIArmory_ShowNewGeneModsPopUp(Obje
 //	This Event Listener runs around the time a squad returns back to Avenger from a tactical mission, right before you see your squad walking towards the camera from the Skyranger.
 //	Augments mod has a similar Event Listener, but it uses ELD_Immediate, so it runs before this one. 
 //	Augments' listener will determine if a wounded soldier has "lost a limb" and now requires augmentation.
-//	This Event Listener triggers right after that, and will disable the Gene Mod associated with the "lost limb", and show a popup, informing the player.
-/*
+//	This Event Listener triggers right after that. If the the Augments mod decided that the soldier has lost a Gene Modded limb, we change it to another limb, if possible, 
+//	or make it so the soldier doesn't lose any limbs.
+
 static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
-	local XComGameState_Unit UnitState;
+	local XComGameState_Unit		UnitState;
+	local BodyParts					SafeParts;
+	local BodyParts					LostParts;
+	local UnitValue					SeveredBodyPart;
+	local XComGameState				NewGameState;
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	if (UnitState != none)
+	`LOG("OnPostMissionUpdateSoldierHealing listener activated for :" @ UnitState.GetFullName(),, 'IRISWO');
+	`LOG("Only mutant SWO is enabled: " @ `SecondWaveEnabled('GM_SWO_OnlyMutant'),, 'IRISWO');
+	`LOG("Soldier lost a limb during the mission: " @ UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart),, 'IRISWO');
+
+	if (UnitState != none &&
+		!`SecondWaveEnabled('GM_SWO_OnlyMutant') &&	 // If losing a limb SHOULD NOT remove the Gene Mod
+		UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))	 // And the soldier DID lose a limb, as set by Augments listener that ran just before
 	{
-		class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
+		//	These parts were assigned by Augments Event Listener as lost.
+		LostParts = class'X2GeneModTemplate'.static.GetDestroyedBodyParts(UnitState);
+
+		//	These body parts must not be allowed to become lost.
+		SafeParts = class'X2GeneModTemplate'.static.GetAugmentedOrGeneModdedBodyParts(UnitState);
+
+		`LOG("Lost head: " @ LostParts.Head,, 'IRISWO');
+		`LOG("Lost torso: " @ LostParts.Torso,, 'IRISWO');
+		`LOG("Lost arms: " @ LostParts.Arms,, 'IRISWO');
+		`LOG("Lost legs: " @ LostParts.Legs,, 'IRISWO');
+		`LOG("==============================",, 'IRISWO');
+
+		`LOG("Safe head: " @ SafeParts.Head,, 'IRISWO');
+		`LOG("Safe torso: " @ SafeParts.Torso,, 'IRISWO');
+		`LOG("Safe arms: " @ SafeParts.Arms,, 'IRISWO');
+		`LOG("Safe legs: " @ SafeParts.Legs,, 'IRISWO');
+		`LOG("==============================",, 'IRISWO');
+
+		//	Soldier lost some body part due to a Grave Wound that we don't want to allow losing
+		if (LostParts.Head && SafeParts.Head || LostParts.Torso && SafeParts.Torso || LostParts.Arms && SafeParts.Arms || LostParts.Legs && SafeParts.Legs)
+		{
+			NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
+			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+			//	Assign a random body part to be "lost", but only if it's not one of the safe ones.
+			if (AssignNewLostLimbToUnit(UnitState, SafeParts))
+			{
+				
+			}
+			else
+			{
+				`LOG("No unsafe limbs, restarting healing.",, 'IRISWO');
+				//	Remove the "needs augmentation" status
+				UnitState.ClearUnitValue('SeveredBodyPart'); //clear this so it doesn't count anymore
+
+				//	Start healing the soldier.
+				StartSoldierHealing(NewGameState, UnitState);
+			}
+			
+			`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+			//`XCOMHISTORY.CleanupPendingGameState(NewGameState);
+		}
 	}
 	return ELR_NoInterrupt;
-}*/
+}
+
+private static function bool AssignNewLostLimbToUnit(out XComGameState_Unit NewUnitState, const BodyParts SafeParts)
+{
+	local string	SelectorString;
+	local int		Random;
+
+	`LOG("Reassigning lost limb to: " @ NewUnitState.GetFullName(),, 'IRISWO');
+
+	//	Build a string that contains number values for Limbs we can allow to be lost - those that are not Gene Modded or already Augmented.
+	if (!SafeParts.Head) SelectorString $= "0";
+	if (!SafeParts.Torso) SelectorString $= "1";
+	if (!SafeParts.Arms) SelectorString $= "2";
+	if (!SafeParts.Legs) SelectorString $= "3";
+
+	`LOG("Initial SelectorString:" @ SelectorString,, 'IRISWO');
+
+	//	Soldier has no body parts that aren't already Gene Modded or Augmented, so there's no limb that we can redirect to.
+	if (Len(SelectorString) == 0) return false;
+
+	//	Rand(4); returns 0, 1, 2, 3
+	//	Select a random character from the string.
+	Random = Rand(Len(SelectorString));
+	`LOG("Initial Random:" @ Random,, 'IRISWO');
+
+	SelectorString = Mid(SelectorString, Random, 1);
+
+	//	Convert string to integer value.
+	Random = int(SelectorString);
+
+	// Set it as the new numerical value for the lost limb.
+	NewUnitState.SetUnitFloatValue('SeveredBodyPart', Random, eCleanup_Never);
+	return true;
+}
+
+//	Copy of the original function that starts healing soldiers wounded in combat, minus the Highlander event.
+private static function StartSoldierHealing(out XComGameState NewGameState, out XComGameState_Unit UnitState)
+{
+	local XComGameStateHistory History;
+	local XComGameState_HeadquartersXCom XComHQ;
+	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
+	local int NewBlocksRemaining, NewProjectPointsRemaining;
+
+	`LOG("Restarting healing for " @ UnitState.GetFullName(),, 'IRISWO');
+	`LOG("!UnitState.IsDead() " @ !UnitState.IsDead(),, 'IRISWO');
+	`LOG("!UnitState.bCaptured " @ !UnitState.bCaptured,, 'IRISWO');
+	`LOG("UnitState.IsInjured() " @ UnitState.IsInjured(),, 'IRISWO');
+	`LOG("UnitState.GetStatus() != eStatus_Healing " @ UnitState.GetStatus() != eStatus_Healing,, 'IRISWO');
+	`LOG("!UnitState.HasHealingProject() " @ !UnitState.HasHealingProject(),, 'IRISWO');
+
+	if (!UnitState.IsDead() && !UnitState.bCaptured && UnitState.IsSoldier() && UnitState.IsInjured() && UnitState.GetStatus() != eStatus_Healing)
+	{
+		History = `XCOMHISTORY;
+
+		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+
+		`LOG("XComHQ != none " @ XComHQ != none,, 'IRISWO');
+		
+		UnitState.SetStatus(eStatus_Healing);
+
+		if (!UnitState.HasHealingProject())
+		{
+			ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.CreateNewStateObject(class'XComGameState_HeadquartersProjectHealSoldier'));
+			ProjectState.SetProjectFocus(UnitState.GetReference(), NewGameState);
+			XComHQ.Projects.AddItem(ProjectState.GetReference());
+
+			`LOG("Created new healing project.",, 'IRISWO');
+		}
+		else
+		{
+			`LOG("Looking for healing project in history.",, 'IRISWO');
+			foreach History.IterateByClassType(class'XComGameState_HeadquartersProjectHealSoldier', ProjectState)
+			{
+				if (ProjectState.ProjectFocus == UnitState.GetReference())
+				{
+					NewBlocksRemaining = UnitState.GetBaseStat(eStat_HP) - UnitState.GetCurrentStat(eStat_HP);
+					if (NewBlocksRemaining > ProjectState.BlocksRemaining) // The unit was injured again, so update the time to heal
+					{
+						ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersProjectHealSoldier', ProjectState.ObjectID));
+
+						// Calculate new wound length again, but ensure it is greater than the previous time, since the unit is more injured
+						//ProjectState.SetExtraWoundPointsFromMentalState(NewGameState, UnitState);
+						NewProjectPointsRemaining = ProjectState.GetWoundPoints(UnitState, ProjectState.ProjectPointsRemaining);
+
+						ProjectState.ProjectPointsRemaining = NewProjectPointsRemaining;
+						ProjectState.BlocksRemaining = NewBlocksRemaining;
+						ProjectState.PointsPerBlock = Round(float(NewProjectPointsRemaining) / float(NewBlocksRemaining));
+						ProjectState.BlockPointsRemaining = ProjectState.PointsPerBlock;
+						ProjectState.UpdateWorkPerHour();
+						ProjectState.StartDateTime = `STRATEGYRULES.GameTime;
+						ProjectState.SetProjectedCompletionDateTime(ProjectState.StartDateTime);
+					}
+
+					break;
+				}
+			}
+		}
+
+		// If a soldier is gravely wounded, roll to see if they are shaken
+		if (UnitState.IsGravelyInjured() && !UnitState.bIsShaken && !UnitState.bIsShakenRecovered)
+		{
+			`LOG("Second entry for shaken.",, 'IRISWO');
+			if (class'X2StrategyGameRulesetDataStructures'.static.Roll(XComHQ.GetShakenChance()))
+			{
+				// @mnauta - leaving in chance to get random scar, but removing shaken gameplay (for new will system)
+				//UnitState.bIsShaken = true;
+				//UnitState.bSeenShakenPopup = false;
+
+				//Give this unit a random scar if they don't have one already
+				if (UnitState.kAppearance.nmScars == '')
+				{
+					UnitState.GainRandomScar();
+					UnitState.bIsShakenRecovered = true;
+				}
+
+				//UnitState.SavedWillValue = UnitState.GetBaseStat(eStat_Will);
+				//UnitState.SetBaseMaxStat(eStat_Will, 0);
+			}
+		}
+	}
+}

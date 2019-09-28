@@ -38,12 +38,6 @@ event OnInit(UIScreen Screen)
 				DialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericContinue;
 
 				`PRESBASE.UIRaiseDialog(DialogData);
-
-				//	Placeholder popup
-				//`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-				//`LOG("CAN BE DISABLED BY AUGMENTATION",, 'IRIPOPUP');
-				//`LOG("===" @ sWarnMsg,, 'IRIPOPUP');
-				//class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
 			}
 		}
 	}
