@@ -238,12 +238,10 @@ static function GetGMHQEvents(out array<HQEvent> arrEvents)
 {
 	local string												AbilityNameStr, GeneModdingStr;
 	local HQEvent												kEvent;
-	local XComGameState_HeadquartersXCom						XComHQ;
 	local XComGameState_HeadquartersProjectGeneModOperation		GeneProject;
 	local XComGameState_Unit									UnitState;
 	local XComGameStateHistory									History;
 
-	XComHQ = class'UIUtilities_Strategy'.static.GetXComHQ();
 	History = `XCOMHISTORY;
 	GeneProject = GetGeneModProjectFromHQ();
 	
