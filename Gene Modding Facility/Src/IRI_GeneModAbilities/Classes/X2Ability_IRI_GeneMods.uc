@@ -263,6 +263,10 @@ static function X2AbilityTemplate Create_Berserk()
 		Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
 		AddFreeCost(Template);
 	}
+	else
+	{
+		Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	}
 
 	if (default.BERSERK_TRIGGERED_BY_DAMAGE)
 	{

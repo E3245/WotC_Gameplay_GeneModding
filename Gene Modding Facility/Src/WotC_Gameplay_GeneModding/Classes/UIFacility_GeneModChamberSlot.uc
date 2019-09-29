@@ -69,9 +69,9 @@ simulated function OnPersonnelSelected(StaffUnitInfo UnitInfo)
 	Pres = `HQPRES;
 	Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitInfo.UnitRef.ObjectID));
 	
-	if (Unit.CanBeStaffed()
+	/*if (Unit.CanBeStaffed()	//	Not sure these checks have a reason to be here? We already do the filtering when initially building the list of units to select from.
 		&& Unit.IsSoldier())
-	{
+	{*/
 		if(!(class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.static.IsDisallowedClass(Unit.GetSoldierClassTemplateName())))
 		{
 			if(!bDismissedWarning)
@@ -85,7 +85,7 @@ simulated function OnPersonnelSelected(StaffUnitInfo UnitInfo)
 				Pres.ScreenStack.Push(kScreen);
 			}
 		}
-	}
+//	}
 }
 
 simulated function GeneModdingWarnDialogFirstTime()

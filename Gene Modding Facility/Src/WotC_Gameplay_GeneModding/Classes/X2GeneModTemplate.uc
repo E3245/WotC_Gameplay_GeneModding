@@ -116,7 +116,12 @@ private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitSta
 		{
 			//	When this is set to "false", the soldier will not receive this ability when going on a mission
 			//	nor any AdditionalAbilities associated with it.
-			NewUnitState.AWCAbilities[j].bUnlocked = false;
+			//NewUnitState.AWCAbilities[j].bUnlocked = false;
+
+			NewUnitState.AWCAbilities.Remove(j, 1);
+
+			NewUnitState.ClearUnitValue(default.GeneCategory);
+
 			return true;
 		}
 	}
@@ -145,6 +150,68 @@ public static function int UnitHasGeneMod(const XComGameState_Unit UnitState)
 		}
 	}
 	return 0;
+}
+
+//	Returns the integer value used by Severed Body Part Unit Value in Augments mod for a limb associated with this Gene Mod.
+public static function int GetMyLimbIndex()
+{
+	switch (default.GeneCategory)
+	{
+		case 'GMCat_brain':
+			return -1;
+		case 'GMCat_eyes':
+			return 0;
+		case 'GMCat_chest':
+			return 1;
+		case 'GMCat_arms':
+			return 2;
+		case 'GMCat_legs':
+			return 3;
+		case 'GMCat_skin':
+			return -1;
+		default:
+			return -1;
+	}
+}
+
+public static function BodyParts GetAugmentedOrGeneModdedBodyParts(const XComGameState_Unit Unit)
+{
+    local BodyParts					Parts;
+	local array<X2GeneModTemplate>	GeneModTemplates;
+	local X2GeneModTemplate			GeneModTemplate;
+
+	Parts = GetAugmentedBodyParts(Unit);
+
+	GeneModTemplates = GetGeneModTemplates();
+
+	foreach GeneModTemplates(GeneModTemplate)
+	{
+		if (GeneModTemplate.UnitHasGeneMod(Unit) > 0)
+		{
+			switch (GeneModTemplate.GeneCategory)
+			{
+				case 'GMCat_brain':
+					break;
+				case 'GMCat_eyes':
+					Parts.Head = true;
+					break;
+				case 'GMCat_chest':
+					Parts.Torso = true;
+					break;
+				case 'GMCat_arms':
+					Parts.Arms = true;
+					break;
+				case 'GMCat_legs':
+					Parts.Legs = true;
+					break;
+				case 'GMCat_skin':
+					break;
+				default:
+					break;
+			}
+		}
+	}
+    return Parts;
 }
 
 //	Use this function when displaying the list of potential Gene Mods for the soldier in UICommodity_GeneModUpgrade.
@@ -275,7 +342,8 @@ public static function string GetGMCanBeDisabledByAugmentWarningMessage(const XC
 				if (!Parts.Legs) return default.m_strCanBeDisabledByAugment_Legs;
 				else return "";
 			case 'GMCat_skin':
-				if (GetAugmentedBodyPercent(Parts) >= 0.25f) return default.m_strCanBeDisabledByAugment_Skin;	//	Display warning for Skin Gene Mods if the soldier already has at least one Augment
+				/*if (GetAugmentedBodyPercent(Parts) >= 0.25f) */ //	Display warning for Skin Gene Mods if the soldier already has at least one Augment
+				return default.m_strCanBeDisabledByAugment_Skin;	
 			default:
 				return "";
 		}
@@ -299,15 +367,11 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
 	NewUnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 
-	//`LOG("DisableGeneModsForAugmentedSoldier called for " @ UnitState.GetFullName() @ "bWounded: " @ bWounded,, 'IRIPOPUP');
-
 	foreach GeneModTemplates(GeneModTemplate)
 	{
-		//`LOG("Looking at Gene Mod" @ GeneModTemplate.DataName,, 'IRIPOPUP');
 		//	If soldier has this Gene Mod and it's active
 		if (GeneModTemplate.UnitHasGeneMod(NewUnitState) > 0)
 		{
-			//`LOG("Soldier has it.",, 'IRIPOPUP');
 			if (bWounded)
 			{
 				//	This function will return a non-empty string if the soldier's limb associated with this Gene Mod has been destroyed.
@@ -318,45 +382,25 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 				//	This function will return a non-empty string if the soldier now has Augments that prevent them from using this Gene Mod
 				sErrMsg = GeneModTemplate.GetGMDisabledByAugmentMessage(NewUnitState);
 			}
-			//`LOG("sErrMsg : " @ sErrMsg,, 'IRIPOPUP');
+
 			if (sErrMsg != "")
 			{
-				//	TODO for E3245
 				//	Show popup here informing the player that this Gene Mod has been disabled due to Augmentation or loss of limb.
 
 				class'X2Helpers_BuildAlert_GeneMod'.static.GM_UIGeneModDestroyed(NewUnitState, sErrMsg);
 
 				GeneModTemplate.DisableGeneModForUnit(NewUnitState);
 				bChangedSomething = true;
-
-				//	Placeholder popup
-				/*
-				if (bWounded)
-				{
-					`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-					`LOG("GENE MOD HAS BEEN DISABLED BY WOUND",, 'IRIPOPUP');
-					`LOG("===" @ sErrMsg,, 'IRIPOPUP');
-					class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
-				}
-				else
-				{
-					`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-					`LOG("GENE MOD HAS BEEN DISABLED BY AUGMENTATION",, 'IRIPOPUP');
-					`LOG("===" @ sErrMsg,, 'IRIPOPUP');
-					class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
-				}*/
 			}
 		}
 	}
 
 	if (bChangedSomething) 
 	{
-		//`LOG("Submitting game state.",, 'IRIPOPUP');
 		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 	}
 	else 
 	{
-		//`LOG("Cancelling game state.",, 'IRIPOPUP');
 		`XCOMHISTORY.CleanupPendingGameState(NewGameState);
 	}
 }
@@ -438,7 +482,7 @@ private static function BodyParts GetAugmentedBodyParts(XComGameState_Unit Unit)
     return Parts;
 }
 
-private static function BodyParts GetDestroyedBodyParts(XComGameState_Unit Unit)
+public static function BodyParts GetDestroyedBodyParts(XComGameState_Unit Unit)
 {
     local BodyParts				Parts;
     local UnitValue             SeveredBodyPart;
