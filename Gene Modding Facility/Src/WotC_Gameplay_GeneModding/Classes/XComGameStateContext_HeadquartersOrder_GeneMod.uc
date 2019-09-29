@@ -150,8 +150,61 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 				AddToGameState.RemoveStateObject(ProjectState.ObjectID);
 			}
 
+			//	If second wave enabled, heal the soldier, and restore the Gene Modded limb if it was marked as lost.
+			if (`SecondWaveEnabled('GM_SWO_MutagenicGrowth'))
+			{
+				`LOG("Mutagenic Growth SWO enabled",, 'IRISWO');
+				SWO_RestoreLostLimb(UnitState, AddToGameState, GeneMod, XComHQ);
+			}
+			else
+			{
+				`LOG("Mutagenic Growth SWO is NOT enabled",, 'IRISWO');
+			}
+
 			`XEVENTMGR.TriggerEvent('GeneModOperationCompleted', UnitState, UnitState, AddToGameState);
 		}		
+	}
+}
+
+static function SWO_RestoreLostLimb(out XComGameState_Unit UnitState, out XComGameState NewGameState, const X2GeneModTemplate GeneModTemplate, out XComGameState_HeadquartersXCom XComHQ)
+{
+	local UnitValue SeveredBodyPart;
+	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
+
+	`LOG("SWO_RestoreLostLimb for soldier: " @ UnitState.GetFullName() @ "and Gene Mod" @ GeneModTemplate.DataName,, 'IRISWO');
+
+	if (UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
+	{
+		`LOG("Soldier missing a limb:" @ int(SeveredBodyPart.fValue),, 'IRISWO');
+
+		if ((int(SeveredBodyPart.fValue) == 0 && GeneModTemplate.GeneCategory == 'GMCat_eyes') ||
+			(int(SeveredBodyPart.fValue) == 1 && GeneModTemplate.GeneCategory == 'GMCat_chest') ||
+			(int(SeveredBodyPart.fValue) == 2 && GeneModTemplate.GeneCategory == 'GMCat_arms') ||
+			(int(SeveredBodyPart.fValue) == 3 && GeneModTemplate.GeneCategory == 'GMCat_legs')) // Skin Gene Mods don't restore lost limbs, duh
+		{
+			`LOG("We Gene Mod this limb, restoring limb and health",, 'IRISWO');
+
+			if (UnitState.IsInjured() && !UnitState.HasHealingProject())
+			{
+				`LOG("Starting a healing project",, 'IRISWO');
+
+				ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.CreateNewStateObject(class'XComGameState_HeadquartersProjectHealSoldier'));
+				ProjectState.SetProjectFocus(UnitState.GetReference(), NewGameState);
+				XComHQ.Projects.AddItem(ProjectState.GetReference());
+			}
+
+			//	Mark Gene Modded limb as no longer lost.
+			UnitState.ClearUnitValue('SeveredBodyPart');
+		}
+		else
+		{
+			`LOG("We did not Gene Mod this limb, doing nothing",, 'IRISWO');
+		}
+	}
+	if (UnitState.IsInjured())
+	{
+		//	Restore X percent of missing health
+		UnitState.ModifyCurrentStat(eStat_HP, UnitState.GetCurrentStat(eStat_HP) + (UnitState.GetMaxStat(eStat_HP) - UnitState.GetCurrentStat(eStat_HP)) * class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.MUTAGENIC_GROWTH_RESTORE_HEALTH);
 	}
 }
 

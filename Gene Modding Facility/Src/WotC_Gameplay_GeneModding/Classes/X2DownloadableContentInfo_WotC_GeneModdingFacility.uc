@@ -34,15 +34,18 @@ var localized string			str_SWO_OnlyMutant_Tooltip;
 var localized string			str_SWO_MutagenicGrowth_Description;
 var localized string			str_SWO_MutagenicGrowth_Tooltip;
 
+var config float MUTAGENIC_GROWTH_RESTORE_HEALTH;
 /*
 Todo for Iridar:
 1) Second Wave Option -> Losing a limb removes the Gene Mod. DONE
-2) Second Wave Option -> Gene Modding a lost limb restores it.
+2) Second Wave Option -> Gene Modding a lost limb restores it. DONE
 3) Negative trait when cancelling Gene Mod.
 4) Berserk strategic
 */
 
-//Accessed like this: `SecondWaveEnabled('GM_SWO_OnlyMutant')
+//	Accessed like this: 
+//	`SecondWaveEnabled('GM_SWO_OnlyMutant')	- Losing a limb permanently removes Gene Mod associated with that limb.
+//	`SecondWaveEnabled('GM_SWO_MutagenicGrowth') - Gene Modding a wounded soldier recovers their wounds and restores lost limb if Gene Modding that limb.
 static function UpdateSecondWaveOptionsList()
 {
 	local array<Object>			UIShellDifficultyArray;

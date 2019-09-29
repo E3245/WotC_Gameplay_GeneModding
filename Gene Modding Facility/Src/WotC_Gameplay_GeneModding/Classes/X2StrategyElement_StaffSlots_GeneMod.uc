@@ -114,22 +114,29 @@ static function bool ShouldDisplayGMSoldierToDoWarning(StateObjectReference Slot
 	return false;
 }
 
+//	IsActive() and CanBeStaffed() checks combined, and also added the feature to allow staffing injured soldiers if the relevant Second Wave Option is enabled.
 static function bool IsUnitValidForGMChamberSoldierSlot(XComGameState_StaffSlot SlotState, StaffUnitInfo UnitInfo)
 {
 	local XComGameState_Unit Unit; 
 
 	Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitInfo.UnitRef.ObjectID));
 
-	if (Unit.CanBeStaffed()
-		&& Unit.IsSoldier()
-//		&& Unit.IsActive()
-		&& SlotState.GetMyTemplate().ExcludeClasses.Find(Unit.GetSoldierClassTemplateName()) == INDEX_NONE)
+	if (Unit.IsSoldier() &&
+		Unit.IsAlive() &&
+		Unit.GetMyTemplate().bStaffingAllowed &&
+		SlotState.GetMyTemplate().ExcludeClasses.Find(Unit.GetSoldierClassTemplateName()) == INDEX_NONE &&
+		(`SecondWaveEnabled('GM_SWO_MutagenicGrowth') && (Unit.GetStatus() == eStatus_Healing || Unit.GetStatus() == eStatus_Active) || //	Second Wave is enabled and the soldier is recovering from wounds or awaiting augmentation
+			!Unit.IsInjured() &&	// If Second Wave is not enabled, we screen out wounded or shaken soldiers.
+			Unit.GetMentalState() != eMentalState_Shaken &&
+			Unit.GetStatus() == eStatus_Active))
 	{
 		return true;
 	}
 
 	return false;
 }
+
+
 
 static function string GetGMChamberSoldierBonusDisplayString(XComGameState_StaffSlot SlotState, optional bool bPreview)
 {

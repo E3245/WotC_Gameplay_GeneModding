@@ -116,7 +116,12 @@ private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitSta
 		{
 			//	When this is set to "false", the soldier will not receive this ability when going on a mission
 			//	nor any AdditionalAbilities associated with it.
-			NewUnitState.AWCAbilities[j].bUnlocked = false;
+			//NewUnitState.AWCAbilities[j].bUnlocked = false;
+
+			NewUnitState.AWCAbilities.Remove(j, 1);
+
+			NewUnitState.ClearUnitValue(default.GeneCategory);
+
 			return true;
 		}
 	}
@@ -337,7 +342,8 @@ public static function string GetGMCanBeDisabledByAugmentWarningMessage(const XC
 				if (!Parts.Legs) return default.m_strCanBeDisabledByAugment_Legs;
 				else return "";
 			case 'GMCat_skin':
-				if (GetAugmentedBodyPercent(Parts) >= 0.25f) return default.m_strCanBeDisabledByAugment_Skin;	//	Display warning for Skin Gene Mods if the soldier already has at least one Augment
+				/*if (GetAugmentedBodyPercent(Parts) >= 0.25f) */ //	Display warning for Skin Gene Mods if the soldier already has at least one Augment
+				return default.m_strCanBeDisabledByAugment_Skin;	
 			default:
 				return "";
 		}

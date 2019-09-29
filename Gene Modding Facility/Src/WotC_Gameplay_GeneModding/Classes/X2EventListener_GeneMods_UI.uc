@@ -96,7 +96,7 @@ static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object Eve
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	`LOG("OnPostMissionUpdateSoldierHealing listener activated for :" @ UnitState.GetFullName(),, 'IRISWO');
+	`LOG("OnPostMissionUpdateSoldierHealing listener activated for :" @ UnitState.GetFullName() @ "status:" @ UnitState.GetStatus(),, 'IRISWO');
 	`LOG("Only mutant SWO is enabled: " @ `SecondWaveEnabled('GM_SWO_OnlyMutant'),, 'IRISWO');
 	`LOG("Soldier lost a limb during the mission: " @ UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart),, 'IRISWO');
 
@@ -152,34 +152,30 @@ static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object Eve
 
 private static function bool AssignNewLostLimbToUnit(out XComGameState_Unit NewUnitState, const BodyParts SafeParts)
 {
-	local string	SelectorString;
-	local int		Random;
+	local array<int>	SelectorArray;
+	local int			Random;
 
 	`LOG("Reassigning lost limb to: " @ NewUnitState.GetFullName(),, 'IRISWO');
 
 	//	Build a string that contains number values for Limbs we can allow to be lost - those that are not Gene Modded or already Augmented.
-	if (!SafeParts.Head) SelectorString $= "0";
-	if (!SafeParts.Torso) SelectorString $= "1";
-	if (!SafeParts.Arms) SelectorString $= "2";
-	if (!SafeParts.Legs) SelectorString $= "3";
+	if (!SafeParts.Head)	SelectorArray.AddItem(0);
+	if (!SafeParts.Torso)	SelectorArray.AddItem(1);
+	if (!SafeParts.Arms)	SelectorArray.AddItem(2);
+	if (!SafeParts.Legs)	SelectorArray.AddItem(3);
 
-	`LOG("Initial SelectorString:" @ SelectorString,, 'IRISWO');
+	`LOG("Initial SelectorArray length:" @ SelectorArray.Length,, 'IRISWO');
 
 	//	Soldier has no body parts that aren't already Gene Modded or Augmented, so there's no limb that we can redirect to.
-	if (Len(SelectorString) == 0) return false;
+	if (SelectorArray.Length == 0) return false;
 
 	//	Rand(4); returns 0, 1, 2, 3
 	//	Select a random character from the string.
-	Random = Rand(Len(SelectorString));
+	Random = `SYNC_RAND_STATIC(SelectorArray.Length);
 	`LOG("Initial Random:" @ Random,, 'IRISWO');
-
-	SelectorString = Mid(SelectorString, Random, 1);
-
-	//	Convert string to integer value.
-	Random = int(SelectorString);
+	`LOG("Selected member:" @ SelectorArray[Random],, 'IRISWO');
 
 	// Set it as the new numerical value for the lost limb.
-	NewUnitState.SetUnitFloatValue('SeveredBodyPart', Random, eCleanup_Never);
+	NewUnitState.SetUnitFloatValue('SeveredBodyPart', SelectorArray[Random], eCleanup_Never);
 	return true;
 }
 
