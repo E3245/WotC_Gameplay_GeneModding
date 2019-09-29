@@ -35,13 +35,6 @@ var localized string			str_SWO_MutagenicGrowth_Description;
 var localized string			str_SWO_MutagenicGrowth_Tooltip;
 
 var config float MUTAGENIC_GROWTH_RESTORE_HEALTH;
-/*
-Todo for Iridar:
-1) Second Wave Option -> Losing a limb removes the Gene Mod. DONE
-2) Second Wave Option -> Gene Modding a lost limb restores it. DONE
-3) Negative trait when cancelling Gene Mod.
-4) Berserk strategic
-*/
 
 //	Accessed like this: 
 //	`SecondWaveEnabled('GM_SWO_OnlyMutant')	- Losing a limb permanently removes Gene Mod associated with that limb.
@@ -114,24 +107,16 @@ static event OnExitPostMissionSequence()
 	History = `XCOMHISTORY;
 	XComHQ = `XCOMHQ;
 
-	//`LOG("OnExitPostMissionSequence",, 'IRIPOPUP');
 	if (`SecondWaveEnabled('GM_SWO_OnlyMutant'))	//	Check if losing the limb due to a Grave Wound (Augments mod) should disable Gene Mod associated with that limb.
 	{	
-		`LOG("Only Mutant SWO is ENABLED, removing Gene Mods from delimbed soldiers. Squad: " @ XComHQ.Squad.Length,, 'IRISWO');
 		for (i = 0; i < XComHQ.Crew.Length; i++)
 		{
 			UnitState = XComGameState_Unit(History.GetGameStateForObjectID(XComHQ.Crew[i].ObjectID));
 			if (UnitState.IsSoldier())
 			{
-				`LOG("Processing unit: " @ UnitState.GetFullName() @ "ID:" @ XComHQ.Crew[i].ObjectID,, 'IRISWO');
-				//`LOG("Displaying popup for squad member: " @  UnitState.GetFullName(),, 'IRIPOPUP');
 				class'X2GeneModTemplate'.static.DisableGeneModsForAugmentedSoldier(UnitState, true);
 			}
 		}
-	}
-	else
-	{
-		`LOG("Only Mutant SWO is NOT enabled, will not be removing Gene Mods from delimbed soldiers",, 'IRISWO');
 	}
 }
 

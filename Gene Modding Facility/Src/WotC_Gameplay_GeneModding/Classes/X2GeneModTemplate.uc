@@ -369,15 +369,11 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
 	NewUnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 
-	//`LOG("DisableGeneModsForAugmentedSoldier called for " @ UnitState.GetFullName() @ "bWounded: " @ bWounded,, 'IRIPOPUP');
-
 	foreach GeneModTemplates(GeneModTemplate)
 	{
-		//`LOG("Looking at Gene Mod" @ GeneModTemplate.DataName,, 'IRIPOPUP');
 		//	If soldier has this Gene Mod and it's active
 		if (GeneModTemplate.UnitHasGeneMod(NewUnitState) > 0)
 		{
-			//`LOG("Soldier has it.",, 'IRIPOPUP');
 			if (bWounded)
 			{
 				//	This function will return a non-empty string if the soldier's limb associated with this Gene Mod has been destroyed.
@@ -388,10 +384,9 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 				//	This function will return a non-empty string if the soldier now has Augments that prevent them from using this Gene Mod
 				sErrMsg = GeneModTemplate.GetGMDisabledByAugmentMessage(NewUnitState);
 			}
-			//`LOG("sErrMsg : " @ sErrMsg,, 'IRIPOPUP');
+
 			if (sErrMsg != "")
 			{
-				//	TODO for E3245
 				//	Show popup here informing the player that this Gene Mod has been disabled due to Augmentation or loss of limb.
 
 				DialogData.eType = eDialog_Alert;
@@ -404,35 +399,16 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 
 				GeneModTemplate.DisableGeneModForUnit(NewUnitState);
 				bChangedSomething = true;
-
-				//	Placeholder popup
-				/*
-				if (bWounded)
-				{
-					`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-					`LOG("GENE MOD HAS BEEN DISABLED BY WOUND",, 'IRIPOPUP');
-					`LOG("===" @ sErrMsg,, 'IRIPOPUP');
-					class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
-				}
-				else
-				{
-					`LOG("Displaying popup for soldier: " @  UnitState.GetFullName(),, 'IRIPOPUP');
-					`LOG("GENE MOD HAS BEEN DISABLED BY AUGMENTATION",, 'IRIPOPUP');
-					`LOG("===" @ sErrMsg,, 'IRIPOPUP');
-					class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
-				}*/
 			}
 		}
 	}
 
 	if (bChangedSomething) 
 	{
-		//`LOG("Submitting game state.",, 'IRIPOPUP');
 		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 	}
 	else 
 	{
-		//`LOG("Cancelling game state.",, 'IRIPOPUP');
 		`XCOMHISTORY.CleanupPendingGameState(NewGameState);
 	}
 }

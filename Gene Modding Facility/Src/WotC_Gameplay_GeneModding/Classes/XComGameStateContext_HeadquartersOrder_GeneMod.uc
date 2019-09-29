@@ -153,12 +153,7 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 			//	If second wave enabled, heal the soldier, and restore the Gene Modded limb if it was marked as lost.
 			if (`SecondWaveEnabled('GM_SWO_MutagenicGrowth'))
 			{
-				`LOG("Mutagenic Growth SWO enabled",, 'IRISWO');
 				SWO_RestoreLostLimb(UnitState, AddToGameState, GeneMod, XComHQ);
-			}
-			else
-			{
-				`LOG("Mutagenic Growth SWO is NOT enabled",, 'IRISWO');
 			}
 
 			`XEVENTMGR.TriggerEvent('GeneModOperationCompleted', UnitState, UnitState, AddToGameState);
@@ -171,23 +166,15 @@ static function SWO_RestoreLostLimb(out XComGameState_Unit UnitState, out XComGa
 	local UnitValue SeveredBodyPart;
 	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
 
-	`LOG("SWO_RestoreLostLimb for soldier: " @ UnitState.GetFullName() @ "and Gene Mod" @ GeneModTemplate.DataName,, 'IRISWO');
-
 	if (UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
 	{
-		`LOG("Soldier missing a limb:" @ int(SeveredBodyPart.fValue),, 'IRISWO');
-
 		if ((int(SeveredBodyPart.fValue) == 0 && GeneModTemplate.GeneCategory == 'GMCat_eyes') ||
 			(int(SeveredBodyPart.fValue) == 1 && GeneModTemplate.GeneCategory == 'GMCat_chest') ||
 			(int(SeveredBodyPart.fValue) == 2 && GeneModTemplate.GeneCategory == 'GMCat_arms') ||
 			(int(SeveredBodyPart.fValue) == 3 && GeneModTemplate.GeneCategory == 'GMCat_legs')) // Skin Gene Mods don't restore lost limbs, duh
 		{
-			`LOG("We Gene Mod this limb, restoring limb and health",, 'IRISWO');
-
 			if (UnitState.IsInjured() && !UnitState.HasHealingProject())
 			{
-				`LOG("Starting a healing project",, 'IRISWO');
-
 				ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.CreateNewStateObject(class'XComGameState_HeadquartersProjectHealSoldier'));
 				ProjectState.SetProjectFocus(UnitState.GetReference(), NewGameState);
 				XComHQ.Projects.AddItem(ProjectState.GetReference());
@@ -195,10 +182,6 @@ static function SWO_RestoreLostLimb(out XComGameState_Unit UnitState, out XComGa
 
 			//	Mark Gene Modded limb as no longer lost.
 			UnitState.ClearUnitValue('SeveredBodyPart');
-		}
-		else
-		{
-			`LOG("We did not Gene Mod this limb, doing nothing",, 'IRISWO');
 		}
 	}
 	if (UnitState.IsInjured())
@@ -217,8 +200,8 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 	local XComGameState_StaffSlot StaffSlotState;
 	local XComGameStateHistory History;
 
-	local SoldierClassAbilityType AbilityType;
-	local ClassAgnosticAbility GMAgAbility;
+//	local SoldierClassAbilityType AbilityType;
+//	local ClassAgnosticAbility GMAgAbility;
 
 	local UnitValue GeneModFailed;
 	local int UV_Holder;
@@ -228,6 +211,15 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 	if (ProjectState != none)
 	{
 		ProjectState.bCanceled = true;
+
+		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+		if (XComHQ != none)
+		{
+			XComHQ = XComGameState_HeadquartersXCom(AddToGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+			XComHQ.Projects.RemoveItem(ProjectState.GetReference());
+			AddToGameState.RemoveStateObject(ProjectState.ObjectID);
+		}
+
 		UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ProjectState.ProjectFocus.ObjectID));
 
 		if (UnitState != none)
@@ -237,6 +229,8 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 
 			if(class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableNegativeAbilityOnProjectCancelled)
 			{
+				GiveRandomNegativeTraitToUnit(UnitState, AddToGameState, XComHQ);
+				/*
 				AbilityType.AbilityName = class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.NegativeAbilityName[ProjectState.RandomNegPerk];
 				AbilityType.ApplyToWeaponSlot = eInvSlot_Unknown;
 				
@@ -244,7 +238,7 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 				GMAgAbility.bUnlocked = true;
 				GMAgAbility.iRank = 0;
 				UnitState.bSeenAWCAbilityPopup = true;
-				UnitState.AWCAbilities.AddItem(GMAgAbility);
+				UnitState.AWCAbilities.AddItem(GMAgAbility);*/
 				
 				UnitState.GetUnitValue('GeneModsImplantsFailed', GeneModFailed);
 				UV_Holder = GeneModFailed.fValue + 1;
@@ -261,13 +255,50 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 				StaffSlotState.EmptySlot(AddToGameState);
 			}
 		}
-
+		/* Moved upwards so that we have an XComHQ state to pass to GiveRandomNegativeTraitToUnit
 		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
 		if (XComHQ != none)
 		{
 			XComHQ = XComGameState_HeadquartersXCom(AddToGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
 			XComHQ.Projects.RemoveItem(ProjectState.GetReference());
 			AddToGameState.RemoveStateObject(ProjectState.ObjectID);
+		}*/
+	}
+}
+
+static function GiveRandomNegativeTraitToUnit(out XComGameState_Unit UnitState, out XComGameState NewGameState, out XComGameState_HeadquartersXCom XComHQ)
+{
+	local X2TraitTemplate					TraitTemplate;
+	local array<name>						ValidTraitNames;
+	local name								SelectedTraitName;
+	local X2EventListenerTemplateManager	EventMgr;
+	local X2DataTemplate					EventTemplate;
+
+	EventMgr = class'X2EventListenerTemplateManager'.static.GetEventListenerTemplateManager();
+
+	//	Cycle through all Trait Templates in the game
+	foreach EventMgr.IterateTemplates(EventTemplate)
+	{
+		TraitTemplate = X2TraitTemplate(EventTemplate);
+
+		if(	TraitTemplate != none &&		
+			!TraitTemplate.bPositiveTrait &&	//	If this is a negative trait
+			UnitState.AcquiredTraits.Find(TraitTemplate.DataName) == INDEX_NONE &&	//	and the soldier does not have it already
+			UnitState.PendingTraits.Find(TraitTemplate.DataName) == INDEX_NONE)		//	and the soldier is not set up to receive it soon
+		{
+			//	Add the trait to the list of negative traits we can randomly select from
+			ValidTraitNames.AddItem(TraitTemplate.DataName);
 		}
 	}
+	//	select a random trait from the created list
+	SelectedTraitName = ValidTraitNames[`SYNC_RAND_STATIC(ValidTraitNames.Length)];
+
+	// add the trait to the unit
+	UnitState.AddAcquiredTrait(NewGameState, SelectedTraitName);
+
+	//	show popup
+	`HQPRES.UINegativeTraitAlert(NewGameState, UnitState, SelectedTraitName);
+
+	//	Not sure where that's used, but this was in the original code.
+	`XEVENTMGR.TriggerEvent( 'UnitTraitsChanged', UnitState, , NewGameState );
 }
