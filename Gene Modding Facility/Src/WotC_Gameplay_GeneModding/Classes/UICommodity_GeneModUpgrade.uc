@@ -375,8 +375,9 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 
 simulated function bool IsItemPurchased(X2GeneModTemplate GeneMod)
 {
-	return UnitState.HasSoldierAbility(GeneMod.AbilityName);
-}
+	//return UnitState.HasSoldierAbility(GeneMod.AbilityName);
+	return GeneMod.UnitHasGeneMod(UnitState) > 0;	//	could potentially make the Gene Mod project take less time if we're applying a Gene Mod the soldier already had previously
+}													//	but lost due to losing a limb due to a Grave Wound (Aumgents + "Only a Mutant" SWO)
 
 function bool CheckIfPurchasedCategory(X2GeneModTemplate GeneMod)
 {

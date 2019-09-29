@@ -37,7 +37,7 @@ m_strCanBeDisabledByAugment_Eyes="Augmenting this soldier's Head will disable th
 m_strCanBeDisabledByAugment_Torso="Augmenting this soldier's Torso will disable their Chest Gene Mod."
 m_strCanBeDisabledByAugment_Arms="Augmenting this soldier's Arms will disable their Arms Gene Mod."
 m_strCanBeDisabledByAugment_Legs="Augmenting this soldier's Legs will disable their Legs Gene Mod."
-m_strCanBeDisabledByAugment_Skin="Augmenting this soldier any further will disable their Skin Gene Mod."
+m_strCanBeDisabledByAugment_Skin="Equipping this soldier with more than 2 Augments will disable their Skin Gene Mod."
 
 m_strHasBeenDisabledByWound_Eyes="Due to a grave wound sustained by this soldier, their Genetically Modified Eyes have been damaged beyond repair, and now must be replaced by Head Augmentation."
 m_strHasBeenDisabledByWound_Torso="Due to a grave wound sustained by this soldier, their Genetically Modified Chest has been damaged beyond repair, and now must be replaced by Torso Augmentation."
@@ -62,6 +62,11 @@ m_strGrantsAbility="GRANTS ABILITY"
 
 [X2DownloadableContentInfo_WotC_GeneModdingFacility]
 GeneModEventLabel="%CLASSNAME GENE MOD:"
+
+str_SWO_OnlyMutant_Description="Only A Mutant: losing a Gene Modded limb due to a Grave Wound will disable that Gene Mod."
+str_SWO_OnlyMutant_Tooltip="Losing a Gene Modded limb due to a Grave Wound will disable that Gene Mod. Lost limbs must be restored with Augmentation or another Gene Mod (Requires Macrophagial Transgenesis SWO)."
+str_SWO_MutagenicGrowth_Description="Macrophagial Transgenesis: soldiers can be Gene Modded even while wounded."
+str_SWO_MutagenicGrowth_Tooltip="Soldiers can be Gene Modded even while wounded. Wounded soldiers recover missing health once Gene Modding is complete. If Augments mod is enabled, Gene Mods can be used to restore lost limbs instead of Augments."
 
 [UIScreenListener_AugmentGeneMod]
 sWarnTitle="ATTENTION"
