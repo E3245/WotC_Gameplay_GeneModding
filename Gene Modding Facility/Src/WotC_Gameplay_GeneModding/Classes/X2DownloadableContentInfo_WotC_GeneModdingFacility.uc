@@ -128,7 +128,8 @@ static event OnExitPostMissionSequence()
 /// </summary>
 static event OnLoadedSavedGame()
 {
-
+	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress WotC_Gameplay_GeneModding");
+	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress IRIPOPUP");
 }
 
 /// <summary>
@@ -138,7 +139,8 @@ static event OnLoadedSavedGame()
 /// </summary>
 static event InstallNewCampaign(XComGameState StartState)
 {
-
+	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress WotC_Gameplay_GeneModding");
+	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress IRIPOPUP");
 }
 
 /// <summary>
