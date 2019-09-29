@@ -295,8 +295,6 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 	local XComGameState_Unit 		NewUnitState;
 	local string					sErrMsg;
 
-	local TDialogueBoxData			DialogData;
-
 	GeneModTemplates = GetGeneModTemplates();
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Remove Gene Mods due to loss of limb or Augmentation from" @ UnitState.GetFullName());
 	NewUnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
@@ -326,13 +324,7 @@ public static function DisableGeneModsForAugmentedSoldier(const XComGameState_Un
 				//	TODO for E3245
 				//	Show popup here informing the player that this Gene Mod has been disabled due to Augmentation or loss of limb.
 
-				DialogData.eType = eDialog_Alert;
-				DialogData.strTitle = class'UIScreenListener_AugmentGeneMod'.default.sWarnTitle;
-				DialogData.strText = `XEXPAND.ExpandString(sErrMsg);
-
-				DialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericContinue;
-
-				`PRESBASE.UIRaiseDialog(DialogData);
+				class'X2Helpers_BuildAlert_GeneMod'.static.GM_UIGeneModDestroyed(NewUnitState, sErrMsg);
 
 				GeneModTemplate.DisableGeneModForUnit(NewUnitState);
 				bChangedSomething = true;

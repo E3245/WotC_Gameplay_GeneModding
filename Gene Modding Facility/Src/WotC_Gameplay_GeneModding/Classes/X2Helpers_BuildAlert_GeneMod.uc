@@ -106,3 +106,13 @@ static function GoToAWC(StateObjectReference UnitRef)
 		}
 	}
 }
+
+static function GM_UIGeneModDestroyed(XComGameState_Unit UnitState, string sMsg)
+{
+	local DynamicPropertySet PropertySet;
+
+	BuildUIAlert_Mod_GeneMod(PropertySet, 'eAlert_GeneModDestroyedByCriticalWound', None, '', "Geoscape_CrewMemberLevelledUp", true);
+	class'X2StrategyGameRulesetDataStructures'.static.AddDynamicIntProperty(PropertySet, 'UnitRef', UnitState.ObjectID);
+	class'X2StrategyGameRulesetDataStructures'.static.AddDynamicStringProperty(PropertySet, 'Message', sMsg);
+	class'XComPresentationLayerBase'.static.QueueDynamicPopup(PropertySet);
+}

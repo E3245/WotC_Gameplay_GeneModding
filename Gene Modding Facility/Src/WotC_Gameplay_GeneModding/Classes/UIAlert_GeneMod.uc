@@ -17,6 +17,7 @@ enum UIAlert_GeneMod
 var public localized string m_strTitleLabelComplete;
 var public localized string m_strTitleLabelNegativeAbility;
 var public localized string m_strTitleLabelNewGeneModAvailable;
+var public localized string m_strTitleLabelGeneModDestroyed;
 var public localized string m_strNewGMAvailable;
 var public localized string m_strGrantsAbility;
 var public localized string m_strSoldierGMHeader;
@@ -36,7 +37,10 @@ simulated function BuildAlert()
 		break;	
 	case 'eAlert_NewGeneModAvailable':
 		BuildGeneNewModOpAvailableAlert(m_strTitleLabelNewGeneModAvailable);
-		break;		
+		break;
+	case 'eAlert_GeneModDestroyedByCriticalWound':
+		BuildGeneModDestroyedAlert();
+		break;				
 	default:
 		AddBG(MakeRect(0, 0, 1000, 500), eUIState_Normal).SetAlpha(0.75f);
 		break;
@@ -58,6 +62,7 @@ simulated function Name GetLibraryID()
 	case 'eAlert_GeneModdingComplete':						return 'Alert_TrainingComplete';
 	case 'eAlert_GeneModNegativeAbilityAcquired':			return 'Alert_NegativeSoldierEvent';
 	case 'eAlert_NewGeneModAvailable':						return 'Alert_Complete';
+	case 'eAlert_GeneModDestroyedByCriticalWoundn':			return 'Alert_AssignStaff';
 	default:
 		return '';
 	}
@@ -135,40 +140,29 @@ simulated function BuildGeneNewModOpAvailableAlert(string TitleLabel)
 	}
 }
 
-//simulated function BuildGeneModNegativeAbilityAcquiredAlert()
-//{
-//	local XComGameState_Unit UnitState;
-//	local X2AbilityTemplateManager TemplateManager;
-//	local string AbilityIcon, AbilityName, AbilityDescription, ClassIcon, ClassName, RankName;
-//
-//	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-//
-//	AbilityTemplate = TemplateManager.FindAbilityTemplate(
-//		class'X2StrategyGameRulesetDataStructures'.static.GetDynamicNameProperty(DisplayPropertySet, 'AbilityTemplate'));
-//
-//	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(
-//		class'X2StrategyGameRulesetDataStructures'.static.GetDynamicIntProperty(DisplayPropertySet, 'UnitRef')));
-//
-//	ClassTemplate = UnitState.GetSoldierClassTemplate();
-//	AbilityName = AbilityTemplate.LocFriendlyName != "" ? AbilityTemplate.LocFriendlyName : ("Missing 'LocFriendlyName' for ability '" $ AbilityTemplate.DataName $ "'");
-//
-//	// Ability Description
-//	AbilityDescription = AbilityTemplate.HasLongDescription() ? AbilityTemplate.GetMyLongDescription(, UnitState) : ("Missing 'LocLongDescription' for ability " $ AbilityTemplate.DataName $ "'");
-//	AbilityIcon = AbilityTemplate.IconImage;
-//
-//	// Send over to flash
-//	LibraryPanel.MC.BeginFunctionOp("UpdateData");
-//	LibraryPanel.MC.QueueString(TitleLabel);
-//	LibraryPanel.MC.QueueString("");
-//	LibraryPanel.MC.QueueString(UnitState.GetName(eNameType_FullNick));
-//	LibraryPanel.MC.QueueString(AbilityIcon);
-//	LibraryPanel.MC.QueueString(m_strNewAbilityLabel);
-//	LibraryPanel.MC.QueueString(AbilityName);
-//	LibraryPanel.MC.QueueString(AbilityDescription);
-//	LibraryPanel.MC.QueueString(m_strContinueTraining);
-//	LibraryPanel.MC.QueueString(m_strCarryOn);
-//	LibraryPanel.MC.EndOp();
-//	GetOrStartWaitingForStaffImage();
-//	Button2.DisableNavigation();
-//	Button2.Hide(); 
-//}
+simulated function BuildGeneModDestroyedAlert()
+{
+	local XComGameState_Unit UnitState;
+	local String Message;
+
+	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(
+		class'X2StrategyGameRulesetDataStructures'.static.GetDynamicIntProperty(DisplayPropertySet, 'UnitRef')));
+
+	Message = class'X2StrategyGameRulesetDataStructures'.static.GetDynamicStringProperty(DisplayPropertySet, 'Message');
+
+	// Send over to flash
+	LibraryPanel.MC.BeginFunctionOp("UpdateData");
+	LibraryPanel.MC.QueueString(m_strSoldierShakenHeader); //ATTENTION
+	LibraryPanel.MC.QueueString(m_strTitleLabelGeneModDestroyed); //SOLDIER SHAKEN 
+	LibraryPanel.MC.QueueString(""); //ICON
+	LibraryPanel.MC.QueueString(Caps(UnitState.GetName(eNameType_FullNick))); //STAFF AVAILABLE STRING
+	LibraryPanel.MC.QueueString(""); //STAFF BONUS STRING
+	LibraryPanel.MC.QueueString(Message); //STAFF BENEFIT STRING
+	LibraryPanel.MC.QueueString("");
+	LibraryPanel.MC.QueueString(m_strOK); //OK
+	LibraryPanel.MC.EndOp();
+	GetOrStartWaitingForStaffImage();
+	//This panel has only one button, for confirm.
+	Button2.DisableNavigation(); 
+	Button2.Hide();
+}
