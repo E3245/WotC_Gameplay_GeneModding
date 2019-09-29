@@ -48,8 +48,9 @@ Iridar helped me a lot with this mod, so here's his Patreon if you feel like don
 [h1][b]COMPATIBILITY (meaning that it works with these mods)[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 [list]
-     	[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1629659010][WotC] Infirmaria Ex Mortis[/url]
-	[*]If unsure, read the description of the other mods or pray, whichever is easier.
+     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1629659010][WotC] Infirmaria Ex Mortis[/url]
+     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1293725945]Augmentations[/url] for WotC.
+     [*]If unsure, read the description of the other mods or pray, whichever is easier.
 [/list]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 [h1][b]F.A.Q[/b][/h1]
@@ -78,7 +79,7 @@ A: Not really, no.
 [h1]UI/Coding:[/h1]
 [list]
      [*]E3245 for assembling the entire mod, and coding most of everything.
-     [*]Iridar for helping me with the new Gene Mod abilities and such.
+     [*]Iridar for helping me with the new Gene Mod abilities and Augmentation/MEC Troopers support.
      [*]PZ for her Psionic Training mod. Without this mod, I would not been able to do this correctly.
      [*]Oni for her Laboratory Already Better mod. I would not have found those particular UI elements that are now used in the custom UI screen, and for code that makes Gene Modding statuses appear in the Events.
      [*]robojumper, Xynamek, and others for helping me with troubleshooting and additional code snippets.
