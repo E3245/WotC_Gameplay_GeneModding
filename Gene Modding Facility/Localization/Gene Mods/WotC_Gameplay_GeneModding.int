@@ -8,11 +8,11 @@ Summary="Taking damage will cause this soldier to enter berserker rage and attac
 
 [GM_IRI_SecondaryHeart X2GeneModTemplate]
 DisplayName="Secondary Heart"
-Summary="Upon taking lethal damage, this soldier will begin bleeding out. They will remain conscious, but they will die if they are not Stabilizied or evacuated within a few turns."
+Summary="Upon taking lethal damage, this soldier will begin bleeding out. They will remain conscious, but they will die if they are not Stabilized or evacuated within a few turns."
 
 [GM_IRI_TranquilMind X2GeneModTemplate]
 DisplayName="Tranquil Mind"
-Summary="This soldier cannot be targeted or affect by any psionic abilities, inclduing those from allied sources."
+Summary="This soldier cannot be targeted or affect by any psionic abilities, including those from allied sources."
 
 [GM_IRI_ChaoticMind X2GeneModTemplate]
 DisplayName="Chaotic Mind"
