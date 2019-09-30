@@ -3,7 +3,9 @@
   <PropertyGroup>
     <Guid>e200572b-726b-47e8-980d-0d8ddb9110de</Guid>
     <Name>WotC_Gameplay_GeneModding</Name>
-    <Description>Description of My XCOM 2 Mod.</Description>
+    <Description>Description of My XCOM 2 Mod.
+
+tags= gameplay, Gene Mod, EW, remove PCS</Description>
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>Gene Modding Facility</AssemblyName>
     <RootNamespace>Gene Modding Facility</RootNamespace>
