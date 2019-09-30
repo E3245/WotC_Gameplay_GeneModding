@@ -155,6 +155,9 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 			{
 				SWO_RestoreLostLimb(UnitState, AddToGameState, GeneMod, XComHQ);
 			}
+			
+			//	Remove any negative traits acquired as the result of canceling previous Gene Modding projects
+			class'XComGameState_ShownGeneModPopups'.static.CureNegativeTraitsForUnit(UnitState, AddToGameState);
 
 			`XEVENTMGR.TriggerEvent('GeneModOperationCompleted', UnitState, UnitState, AddToGameState);
 		}		
@@ -295,6 +298,9 @@ static function GiveRandomNegativeTraitToUnit(out XComGameState_Unit UnitState, 
 
 	// add the trait to the unit
 	UnitState.AddAcquiredTrait(NewGameState, SelectedTraitName);
+
+	//	Track the trait so we can remove it later if the next Gene Mod project for this unit is successful
+	class'XComGameState_ShownGeneModPopups'.static.TrackAddedNegativeTraitForUnit(NewGameState, UnitState, SelectedTraitName);
 
 	//	show popup
 	`HQPRES.UINegativeTraitAlert(NewGameState, UnitState, SelectedTraitName);
