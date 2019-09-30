@@ -10,7 +10,7 @@ var array<UnitNegativeTraitsStruct> UnitNegativeTraits;
 
 var array<Name> DisplayedPopups;
 
-const bLog = false;
+const bLog = true;
 
 private static function XComGameState_ShownGeneModPopups GetOrCreate(out XComGameState NewGameState)
 {
@@ -104,17 +104,19 @@ public static function CureNegativeTraitsForUnit(out XComGameState_Unit NewUnitS
 	local X2TraitTemplate					CurrentTraitTemplate;
 	local X2EventListenerTemplateManager	EventTemplateManager;
 
+	`LOG("CureNegativeTraitsForUnit: " @ NewUnitState.GetFullName() @ "Neg. Traits: " @ NewUnitState.NegativeTraits.Length, bLog, 'IRIGENEPOP');
+
 	NewStateObject = static.GetOrCreate(NewGameState);
 
 	EventTemplateManager = class'X2EventListenerTemplateManager'.static.GetEventListenerTemplateManager();
 
 	for( CurrentTraitIndex = NewUnitState.NegativeTraits.Length - 1; CurrentTraitIndex >= 0; --CurrentTraitIndex )
 	{
+		CurrentTraitTemplate = X2TraitTemplate(EventTemplateManager.FindEventListenerTemplate(NewUnitState.NegativeTraits[CurrentTraitIndex].TraitName));
+
 		if (NewStateObject.IsTrackingNegativeTraitForUnit(NewUnitState, CurrentTraitTemplate.DataName))
 		{
 			// cure the trait
-			CurrentTraitTemplate = X2TraitTemplate(EventTemplateManager.FindEventListenerTemplate(NewUnitState.NegativeTraits[CurrentTraitIndex].TraitName));
-
 			NewUnitState.AcquiredTraits.Remove(CurrentTraitIndex, 1);
 
 			NewUnitState.NegativeTraits.Remove(CurrentTraitIndex, 1);
@@ -122,10 +124,12 @@ public static function CureNegativeTraitsForUnit(out XComGameState_Unit NewUnitS
 			NewUnitState.CuredTraits.AddItem(CurrentTraitTemplate.DataName);
 
 			NewStateObject.StopTrackingNegativeTraitForUnit(NewUnitState, CurrentTraitTemplate.DataName);
+
+			//	TODO for E3245
+			//	Show popup here?
+			//	ShowPopup(NewUnitState, CurrentTraitTemplate.DataName)
 		}
 	}
-
-	// Show popup here?
 
 	`XEVENTMGR.TriggerEvent( 'UnitTraitsChanged', NewUnitState, , NewGameState );
 }
