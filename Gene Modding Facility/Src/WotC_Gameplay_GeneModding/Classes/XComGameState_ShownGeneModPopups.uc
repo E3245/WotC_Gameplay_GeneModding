@@ -1,5 +1,8 @@
 class XComGameState_ShownGeneModPopups extends XComGameState_BaseObject;
 
+var localized string ProjectCompleteNotification;
+var localized string ProjectCompleteSubTitle;
+
 struct UnitNegativeTraitsStruct
 {
 	var int ObjectID;
@@ -127,7 +130,7 @@ public static function CureNegativeTraitsForUnit(out XComGameState_Unit NewUnitS
 
 			//	TODO for E3245
 			//	Show popup here?
-			//	ShowPopup(NewUnitState, CurrentTraitTemplate.DataName)
+			`HQPRES.NotifyBanner(default.ProjectCompleteNotification, class'UIUtilities_Image'.const.EventQueue_Staff, default.ProjectCompleteSubTitle, NewUnitState.GetName(eNameType_RankFull), eUIState_Good);
 		}
 	}
 

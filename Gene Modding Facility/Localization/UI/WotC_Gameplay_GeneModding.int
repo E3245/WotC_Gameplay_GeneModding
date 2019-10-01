@@ -70,3 +70,7 @@ str_SWO_MutagenicGrowth_Tooltip="Soldiers can be Gene Modded even while wounded.
 
 [UIScreenListener_AugmentGeneMod]
 sWarnTitle="ATTENTION"
+
+[XComGameState_ShownGeneModPopups]
+ProjectCompleteNotification="REHABILITATION COMPLETE"
+ProjectCompleteSubTitle="All negative traits removed!"
