@@ -1,4 +1,4 @@
-class X2Effect_IRI_LizardReflex extends X2Effect_PersistentStatChange config(GeneMods);
+class X2Effect_IRI_LizardReflex extends X2Effect_Persistent config(GeneMods);
 
 var config bool TriggerOncePerTurn;
 var config bool ForceMoveSoldier;
