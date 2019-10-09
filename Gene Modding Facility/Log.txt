@@ -1,0 +1,22 @@
+History of Changes:
+
+Release ver: 1.003:
+[list]
+     [*]Fixed a bug where none of the Gene Mod abilities worked properly.
+[/list]
+
+Release ver: 1.002:
+[list]
+     [*]Patched the facility upgrade to not unlock all staff slots if another mod adds staff slots.
+     [*]Recategorized Berzerker Glands to be in the Chest category instead of the skin category.
+[/list]
+
+Release ver: 1.001:
+[list]
+     [*]Prevent MEC Troopers from getting Gene Mods until further notice.
+[/list]
+
+Release ver: 1.000:
+[list]
+     [*]Initial Release.
+[/list]
