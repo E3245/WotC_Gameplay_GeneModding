@@ -33,38 +33,34 @@ var localized string			str_SWO_OnlyMutant_Description;
 var localized string			str_SWO_OnlyMutant_Tooltip;
 var localized string			str_SWO_MutagenicGrowth_Description;
 var localized string			str_SWO_MutagenicGrowth_Tooltip;
+var localized string			str_SWO_Biosynthesis_Description;
+var localized string			str_SWO_Biosynthesis_Tooltip;
 
 var config float MUTAGENIC_GROWTH_RESTORE_HEALTH;
 
 //	Accessed like this: 
 //	`SecondWaveEnabled('GM_SWO_OnlyMutant')	- Losing a limb permanently removes Gene Mod associated with that limb.
 //	`SecondWaveEnabled('GM_SWO_MutagenicGrowth') - Gene Modding a wounded soldier recovers their wounds and restores lost limb if Gene Modding that limb.
+//	`SecondWaveEnabled('GM_SWO_Biosynthesis') - Can Gene Mod augmented limbs.
 static function UpdateSecondWaveOptionsList()
 {
 	local array<Object>			UIShellDifficultyArray;
 	local Object				ArrayObject;
 	local UIShellDifficulty		UIShellDifficulty;
-    local SecondWaveOption		SWO_OnlyMutant, SWO_MutagenicGrowth;
+    local SecondWaveOption		SWO_OnlyMutant;
+	local SecondWaveOption		SWO_MutagenicGrowth;
+	local SecondWaveOption		SWO_Biosynthesis;
 	local bool					bAugmentsModLoaded;
 	
 	SWO_MutagenicGrowth.ID = 'GM_SWO_MutagenicGrowth';
 	SWO_MutagenicGrowth.DifficultyValue = 0;
 	
 	bAugmentsModLoaded = DLCLoaded('Augmentations');
-	if (bAugmentsModLoaded)
-	{
-		SWO_OnlyMutant.ID = 'GM_SWO_OnlyMutant';
-		SWO_OnlyMutant.DifficultyValue = 0;
+	SWO_OnlyMutant.ID = 'GM_SWO_OnlyMutant';
+	SWO_OnlyMutant.DifficultyValue = 0;
 
-		UIShellDifficultyArray = class'XComEngine'.static.GetClassDefaultObjects(class'UIShellDifficulty');
-		foreach UIShellDifficultyArray(ArrayObject)
-		{
-				UIShellDifficulty = UIShellDifficulty(ArrayObject);
-				UIShellDifficulty.SecondWaveOptions.AddItem(SWO_OnlyMutant);
-				UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_OnlyMutant_Description);
-				UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_OnlyMutant_Tooltip);
-		}
-	}
+	SWO_Biosynthesis.ID = 'GM_SWO_Biosynthesis';
+	SWO_Biosynthesis.DifficultyValue = 0;
 	
 	UIShellDifficultyArray = class'XComEngine'.static.GetClassDefaultObjects(class'UIShellDifficulty');
 	foreach UIShellDifficultyArray(ArrayObject)
@@ -73,6 +69,17 @@ static function UpdateSecondWaveOptionsList()
 		UIShellDifficulty.SecondWaveOptions.AddItem(SWO_MutagenicGrowth);
 		UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_MutagenicGrowth_Description);
 		UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_MutagenicGrowth_Tooltip);
+
+		if (bAugmentsModLoaded)
+		{
+			UIShellDifficulty.SecondWaveOptions.AddItem(SWO_OnlyMutant);
+			UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_OnlyMutant_Description);
+			UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_OnlyMutant_Tooltip);
+
+			UIShellDifficulty.SecondWaveOptions.AddItem(SWO_Biosynthesis);
+			UIShellDifficulty.SecondWaveDescriptions.AddItem(default.str_SWO_Biosynthesis_Description);
+			UIShellDifficulty.SecondWaveToolTips.AddItem(default.str_SWO_Biosynthesis_Tooltip);
+		}
 	}
 }
 

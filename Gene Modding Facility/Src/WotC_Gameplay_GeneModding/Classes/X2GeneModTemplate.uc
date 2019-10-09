@@ -245,6 +245,9 @@ public static function string GetGMPreventedByAugmentationMessage(const XComGame
 {
 	local BodyParts Parts;
 
+	//	If Biosynthesis SWO is enabled, Augmentations do not prevent Gene Modification.
+	if (`SecondWaveEnabled('GM_SWO_Biosynthesis')) return "";
+
 	Parts = GetAugmentedBodyParts(Unit);
 
 	switch (default.GeneCategory)
