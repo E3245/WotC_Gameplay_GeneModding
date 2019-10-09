@@ -59,6 +59,9 @@ tags= gameplay, Gene Mod, EW, remove PCS</Description>
     <Content Include="Localization\UI\WotC_Gameplay_GeneModding.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Log.txt">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="ModPreview.jpg">
       <SubType>Content</SubType>
     </Content>

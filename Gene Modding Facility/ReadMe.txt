@@ -45,6 +45,7 @@ Iridar helped me a lot with this mod, so here's his Patreon if you feel like don
 [list]
      [*]Fix some bugs, if any.
      [*]More Gene Mods, if possible.
+	 [*]MEC Troopers support.
 [/list]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 [h1][b]COMPATIBILITY (meaning that it works with these mods)[/b][/h1]
@@ -69,7 +70,7 @@ A: Guide coming soon.
 
 [b]Q: Where is the rest of the classic Gene Mods? I want the classic Gene Mods![/b]
 
-A: Someone else is implementing them in their mod, so stay tuned.
+A: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1561030099]Mitzruti's Perk Pack[/url] has them now.
 
 [b]Q: Vanilla version?[/b]
 
@@ -85,7 +86,7 @@ A: Not really, no.
      [*]Iridar for helping me with the new Gene Mod abilities and Augmentation/MEC Troopers support.
      [*]PZ for her Psionic Training mod. Without this mod, I would not been able to do this correctly.
      [*]Oni for her Laboratory Already Better mod. I would not have found those particular UI elements that are now used in the custom UI screen, and for code that makes Gene Modding statuses appear in the Events.
-     [*]robojumper, Xynamek / Astral Descend, and others for helping me with troubleshooting and additional code snippets.
+     [*]robojumper, Xymanek / Astral Descend, and others for helping me with troubleshooting and additional code snippets.
 [/list]
 
 [h1]Thumbnail:[/h1]
@@ -99,7 +100,7 @@ A: Not really, no.
 [h1][b]LOG[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
-Release ver: 1.000:
+Release ver: 1.003:
 [list]
-     [*]Initial Release.
+     [*]Fixed a bug where none of the Gene Mod abilities worked properly.
 [/list]
