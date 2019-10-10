@@ -5,7 +5,7 @@
     <Name>WotC_Gameplay_GeneModding</Name>
     <Description>Description of My XCOM 2 Mod.
 
-tags= gameplay, Gene Mod, EW, remove PCS</Description>
+tags= gameplay, war of the chosen, Gene Mod, EW, &gt;remove PCS</Description>
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>Gene Modding Facility</AssemblyName>
     <RootNamespace>Gene Modding Facility</RootNamespace>
