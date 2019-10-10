@@ -13,10 +13,10 @@ event OnInit(UIScreen Screen)
 	local X2GeneModTemplate			GeneModTemplate;
 	local array<X2GeneModTemplate>	GeneModTemplates;
 	local string					sWarnMsg;
+	local TDialogueBoxData			DialogData;
 
-	local TDialogueBoxData DialogData;
-
-	//`LOG("Gene Mod UISL Triggered by screen: " @  Screen.Class,, 'GMUISL');
+	//	If Biosynthesis SWO is enabled, Augmentations do not prevent Gene Modification.
+	if (`SecondWaveEnabled('GM_SWO_Biosynthesis')) return;
 
 	if (Screen.IsA('UIArmory_Augmentations'))
 	{
@@ -47,7 +47,8 @@ event OnRemoved(UIScreen Screen)
 {
 	local UIArmory_Loadout LoadoutScreen;
 
-	//`LOG("Gene Mod UISL Triggered by OnRemoved: " @  Screen.Class,, 'GMUISL');
+	//	If Biosynthesis SWO is enabled, Augmentations do not prevent Gene Modification.
+	if (`SecondWaveEnabled('GM_SWO_Biosynthesis')) return;
 
 	if (Screen.IsA('UIArmory_Augmentations'))
 	{

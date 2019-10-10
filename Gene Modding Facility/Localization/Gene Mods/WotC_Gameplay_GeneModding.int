@@ -4,7 +4,7 @@ Summary="Adaptation: When taking damage, soldier will gain stacking resistance t
 
 [GM_IRI_BerserkGenes X2GeneModTemplate]
 DisplayName="Berserker Genes"
-Summary="Taking damage will cause this soldier to enter berserker rage and attack enemies in sight."
+Summary="Taking damage or panicking will cause this soldier to enter berserker rage and attack enemies in sight."
 
 [GM_IRI_SecondaryHeart X2GeneModTemplate]
 DisplayName="Secondary Heart"
@@ -12,7 +12,7 @@ Summary="Upon taking lethal damage, this soldier will begin bleeding out. They w
 
 [GM_IRI_TranquilMind X2GeneModTemplate]
 DisplayName="Tranquil Mind"
-Summary="This soldier cannot be targeted or affect by any psionic abilities, including those from allied sources."
+Summary="This soldier cannot be targeted or affect by ANY psionic abilities, including those from allied sources or the soldier themselves."
 
 [GM_IRI_ChaoticMind X2GeneModTemplate]
 DisplayName="Chaotic Mind"
@@ -20,8 +20,8 @@ Summary="This soldier receives a large bonus to Psi Offense, but cannot contain 
 
 [GM_IRI_CheetahGenes X2GeneModTemplate]
 DisplayName="Cheetah Genes"
-Summary="This soldier receives a large bonus to Mobility, but moving will make the soldier gradually lose the bonus, and even transform it into a penalty. Lost mobility is gradually recovered each turn the soldier doesn't move."
+Summary="This soldier receives +6/4/2 Mobility when using Light/Medium/Heavy Armor. Moving will make the soldier gradually lose the bonus, and even transform it into a penalty. Lost mobility is gradually recovered each turn the soldier doesn't move. Soldier has better eyesight during the day and worse during the night."
 
 [GM_IRI_LizardReflex X2GeneModTemplate]
 DisplayName="Viper's Reflex"
-Summary="Soldier gains +20 Dodge, and when Dodging enemy attacks, they will move out of the way of the attack, completely avoid the damage. Triggers once per turn."
+Summary="Soldier gains +20 Dodge, and when Dodging enemy attacks, they will move out of the way of the attack, completely avoid the damage. Triggers once per turn. Soldier suffers negligible penalties to combat performance in cold and hot environments."

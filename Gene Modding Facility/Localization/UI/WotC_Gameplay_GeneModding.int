@@ -67,6 +67,8 @@ str_SWO_OnlyMutant_Description="Only A Mutant: losing a Gene Modded limb due to 
 str_SWO_OnlyMutant_Tooltip="Losing a Gene Modded limb due to a Grave Wound will disable that Gene Mod. Lost limbs must be restored with Augmentation or another Gene Mod (Requires Macrophagial Transgenesis SWO)."
 str_SWO_MutagenicGrowth_Description="Macrophagial Transgenesis: soldiers can be Gene Modded even while wounded."
 str_SWO_MutagenicGrowth_Tooltip="Soldiers can be Gene Modded even while wounded. Wounded soldiers recover missing health once Gene Modding is complete. If Augments mod is enabled, Gene Mods can be used to restore lost limbs instead of Augments."
+str_SWO_Biosynthesis_Description="Biosynthesis: Augmented limbs can be Gene Modded."
+str_SWO_Biosynthesis_Tooltip="Augmented limbs can be Gene Modded. Gene Mods are no longer removed by Augmenting the Gene Modded limb."
 
 [UIScreenListener_AugmentGeneMod]
 sWarnTitle="ATTENTION"
