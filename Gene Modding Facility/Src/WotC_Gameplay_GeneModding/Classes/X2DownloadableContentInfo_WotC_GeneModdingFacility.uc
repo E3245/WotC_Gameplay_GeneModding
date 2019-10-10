@@ -26,6 +26,8 @@ var config int GeneModLimitCat2;
 var config int GeneModLimitCat3;
 var config int GeneModLimitCat4;
 var config int GeneModLimitCat5;
+var config int GeneModLimitCat6;
+var config int GeneModLimitCat7;
 
 var config bool IntegratedWarfare_BoostGeneStats;
 
