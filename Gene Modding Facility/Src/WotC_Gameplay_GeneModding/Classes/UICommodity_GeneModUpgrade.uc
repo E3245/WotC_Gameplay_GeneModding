@@ -56,6 +56,8 @@ var localized string					m_strGMCat2;
 var localized string					m_strGMCat3;
 var localized string					m_strGMCat4;
 var localized string					m_strGMCat5;
+var localized string					m_strGMCat6;
+var localized string					m_strGMCat7;
 
 var UIX2PanelHeader						TitleHeader;
 
@@ -253,6 +255,20 @@ simulated function UpdateList()
 	{
 		UI_CreateHeaderandList(m_strGMCat5, arrGeneMod); 
 	}
+
+	arrGeneMod = ConvertGeneModsToCommodities('GMCat_arms');
+	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 6" , , 'WotC_Gameplay_GeneModding');
+	if (arrGeneMod.Length > 0)
+	{
+		UI_CreateHeaderandList(m_strGMCat6, arrGeneMod); 
+	}
+
+	arrGeneMod = ConvertGeneModsToCommodities('GMCat_none');
+	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 7" , , 'WotC_Gameplay_GeneModding');
+	if (arrGeneMod.Length > 0)
+	{
+		UI_CreateHeaderandList(m_strGMCat7, arrGeneMod); 
+	}
 }
 
 simulated function UI_CreateHeaderandList(string LocHeader, array<Commodity> arrComm)
@@ -413,6 +429,12 @@ function int MatchLimitValue(name Category)
 			break;
 		case ('GMCat_legs'):
 			return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.GeneModLimitCat5;
+			break;
+		case ('GMCat_arms'):
+			return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.GeneModLimitCat6;
+			break;
+		case ('GMCat_none'):
+			return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.GeneModLimitCat7;
 			break;
 		default:
 			break;

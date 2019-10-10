@@ -1,5 +1,21 @@
 History of Changes:
 
+Release ver: 1.011:
+[list]
+     [*]Fixed a bug where all of the Gene mods would be considered as a misc Gene mod.
+[/list]
+
+Release ver: 1.010:
+[list]
+     [*]NEW SECOND WAVE OPTION: Added Biosynthesis SWO that allows Gene Mods and Augments to coexist without affecting each other.
+     [*]Moved Armor Condition to CanEverBeValid. 
+	 [*]Moved Cheetah and Lizard stat bonuses to Gene Mod Template. 
+	 [*]Gene Mods without localization will now specify ability localization.
+	 [*]Balancing changes to operation time for Cheetah and Adaptation.
+	 [*]Added arms category for modders. To use it, you need a gene mod with the GeneCategory set to: GMCat_arms.
+	 [*]Added misc category for modders.
+[/list]
+
 Release ver: 1.003:
 [list]
      [*]Fixed a bug where none of the Gene Mod abilities worked properly.

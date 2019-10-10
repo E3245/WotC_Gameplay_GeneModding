@@ -24,6 +24,8 @@ m_strGMCat2 = EYES
 m_strGMCat3 = CHEST
 m_strGMCat4 = SKIN
 m_strGMCat5 = LEGS
+m_strGMCat6 = ARMS
+m_strGMCat7 = MISC
 m_strSoldierStatus = %SKILL Operation
 
 [X2GeneModTemplate]
