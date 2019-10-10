@@ -13,6 +13,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	foreach default.GeneMods(GeneModName)
 	{
 		`CREATE_X2TEMPLATE(class'X2GeneModTemplate', Template, GeneModName);
+		if (Template.GeneCategory == 'none' || Template.GeneCategory == '')
+		{
+			Template.GeneCategory = 'GMCat_none';
+		}
 		Templates.AddItem(Template);
 	}
 
