@@ -35,12 +35,10 @@ var config bool SECONDARY_HEART_SELF_REVIVES;
 //	Cheetah Genes
 var config int CHEETAH_GENES_SIGHT_RANGE_PENALTY_NIGHT;
 var config int CHEETAH_GENES_SIGHT_RANGE_BONUS_DAY;
-var config int CHEETAH_GENES_HP_PENALTY;
 
 //	Lizard Reflex
 var config int LIZARD_REFLEX_BAD_WEATHER_MOBILITY_PENALTY;
 var config int LIZARD_REFLEX_BAD_WEATHER_WILL_PENALTY;
-var config int LIZARD_REFLEX_DODGE_BONUS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -127,7 +125,6 @@ static function X2AbilityTemplate Create_LizardReflex()
 	Effect.BuildPersistentEffect(1, true, true, false);
 	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,, Template.AbilitySourceName);
 	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.AddPersistentStatChange(eStat_Dodge, default.LIZARD_REFLEX_DODGE_BONUS);
 	Template.AddShooterEffect(Effect);
 
 	return Template;	
@@ -180,7 +177,6 @@ static function X2AbilityTemplate Create_CheetahGenes()
 	Effect.BuildPersistentEffect(1, true, true, false);
 	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,, Template.AbilitySourceName);
 	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.AddPersistentStatChange(eStat_HP, default.CHEETAH_GENES_HP_PENALTY);
 	Template.AddShooterEffect(Effect);
 
 	Template.AdditionalAbilities.AddItem('IRI_CheetahGenes_Penalty');
@@ -248,7 +244,7 @@ static function X2AbilityTemplate Create_Berserk()
 	local X2Effect_RemoveEffects			RemoveEffects;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'IRI_Berserk');
-
+	
 	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_beserker_rage";
 	Template.AbilitySourceName = 'eAbilitySource_Commander';
 

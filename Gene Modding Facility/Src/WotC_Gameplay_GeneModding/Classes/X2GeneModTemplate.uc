@@ -71,12 +71,36 @@ var config array<name> RestrictGeneModsIfInstalled;
 var config int BaseTimeToCompletion;
 var config name GeneCategory;
 
-//	TODO for Iridar:
-//	Make optional: "Gene Modding restores the limb"
-//	Make optional: "losing the limb removes the Gene Mod"
+function string GetDisplayName() 
+{ 
+	local X2AbilityTemplate Template;
 
-function string GetDisplayName() { return DisplayName; }
-function string GetSummary() { return `XEXPAND.ExpandString(Summary); }
+	if (DisplayName == "")
+	{
+		Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(AbilityName);
+		return Template.LocFriendlyName;
+	}
+	else
+	{
+		return DisplayName; 
+	}
+}
+
+function string GetSummary() 
+{ 
+	local X2AbilityTemplate Template;
+
+	//	If this Gene Mod is missing separate localization
+	if (Summary == "" && AbilityName != '') 
+	{
+		Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(AbilityName);
+		return Template.GetMyLongDescription();
+	}
+	else
+	{
+		return `XEXPAND.ExpandString(Summary); 
+	}
+}
 function string GetImage() { return strImage; }
 
 
@@ -220,6 +244,9 @@ public static function BodyParts GetAugmentedOrGeneModdedBodyParts(const XComGam
 public static function string GetGMPreventedByAugmentationMessage(const XComGameState_Unit Unit)
 {
 	local BodyParts Parts;
+
+	//	If Biosynthesis SWO is enabled, Augmentations do not prevent Gene Modification.
+	if (`SecondWaveEnabled('GM_SWO_Biosynthesis')) return "";
 
 	Parts = GetAugmentedBodyParts(Unit);
 
