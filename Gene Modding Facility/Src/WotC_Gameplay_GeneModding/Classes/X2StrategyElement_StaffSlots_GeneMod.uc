@@ -123,6 +123,7 @@ static function bool IsUnitValidForGMChamberSoldierSlot(XComGameState_StaffSlot 
 
 	if (Unit.IsSoldier() &&
 		Unit.IsAlive() &&
+		!Unit.IsRobotic() &&
 		Unit.GetMyTemplate().bStaffingAllowed &&
 		SlotState.GetMyTemplate().ExcludeClasses.Find(Unit.GetSoldierClassTemplateName()) == INDEX_NONE &&
 		(`SecondWaveEnabled('GM_SWO_MutagenicGrowth') && (Unit.GetStatus() == eStatus_Healing || Unit.GetStatus() == eStatus_Active) || //	Second Wave is enabled and the soldier is recovering from wounds or awaiting augmentation
