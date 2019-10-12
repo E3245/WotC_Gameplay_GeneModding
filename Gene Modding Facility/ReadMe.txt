@@ -100,9 +100,10 @@ A: Not really, no.
 [h1][b]LOG[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
-Release ver: 1.011:
+Release ver: 1.013:
 [list]
-     [*]Fixed a bug where all of the Gene mods would be considered as a misc Gene mod.
+     [*]Fix for Chaotic Mind appearing and not dealing damage.
+     [*]Restricted all robotic units from getting Gene Mods.
 [/list]
 
 Release ver: 1.010:
