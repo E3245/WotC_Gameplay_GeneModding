@@ -789,7 +789,8 @@ static function X2AbilityTemplate Create_ChaoticMind()
 	//	Giving it a 1 turn cooldown so that the Event Listener doesn't activate it more than once per turn,
 	//	which can happen if there are several soldiers with this ability.
 	AddCooldown(Template, default.CHAOTIC_MIND_COOLDOWN);
-	
+	SetHidden(Template);
+
 	//	Targeting and Triggering
 	Template.AbilityToHitCalc = default.DeadEye;
 	Template.AbilityTargetStyle = default.SelfTarget;
