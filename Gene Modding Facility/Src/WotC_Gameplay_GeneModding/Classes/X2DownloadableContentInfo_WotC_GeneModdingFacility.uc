@@ -175,6 +175,7 @@ static event OnPostTemplatesCreated()
 {
 	PatchFacility();
 	UpdateSecondWaveOptionsList();
+	RecolorGeneModAbilities();
 }
 
 static function PatchFacility() 
@@ -194,6 +195,42 @@ static function PatchFacility()
 		StaffSlotDef.StaffSlotTemplateName = 'GeneModdingChamberSoldierStaffSlot';
 		StaffSlotDef.bStartsLocked = true;
 		Template.StaffSlotDefs.AddItem(StaffSlotDef);
+	}
+}
+
+static function RecolorGeneModAbilities()
+{
+    local X2AbilityTemplate         Template;
+    local X2AbilityTemplateManager  AbilityTemplateManager;
+	local X2GeneModTemplate			GeneModTemplate;
+	local array<X2GeneModTemplate>	GeneModTemplates;
+	local int i;
+
+    AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
+
+	foreach GeneModTemplates(GeneModTemplate)
+	{
+		Template = AbilityTemplateManager.FindAbilityTemplate(GeneModTemplate.AbilityName);
+		if (Template != none)
+		{
+			Template.AbilitySourceName = 'eAbilitySource_Commander';
+
+			for (i = 0; i < Template.AbilityTargetEffects.Length; i++)
+			{
+				if (X2Effect_Persistent(Template.AbilityTargetEffects[i]).BuffCategory == ePerkBuff_Passive)
+				{
+					X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+				}
+			}
+			for (i = 0; i < Template.AbilityShooterEffects.Length; i++)
+			{
+				if (X2Effect_Persistent(Template.AbilityShooterEffects[i]).BuffCategory == ePerkBuff_Passive)
+				{
+					X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+				}
+			}
+		}
 	}
 }
 
