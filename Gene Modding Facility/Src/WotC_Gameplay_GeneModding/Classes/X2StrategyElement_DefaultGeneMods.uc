@@ -17,6 +17,10 @@ static function array<X2DataTemplate> CreateTemplates()
 		{
 			Template.GeneCategory = 'GMCat_none';
 		}
+		if (Template.AbilityName == '')
+		{
+			Template.AbilityName = name(String(GeneModName) $ "_GMPassive");
+		}
 		Templates.AddItem(Template);
 	}
 

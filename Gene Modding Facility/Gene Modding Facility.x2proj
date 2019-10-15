@@ -123,6 +123,9 @@ tags= gameplay, war of the chosen, Gene Mod, EW, &gt;remove PCS</Description>
     <Content Include="Src\WotC_Gameplay_GeneModding\Classes\UIStatList_GM.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\WotC_Gameplay_GeneModding\Classes\X2Ability_PurePassives.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\WotC_Gameplay_GeneModding\Classes\X2DownloadableContentInfo_WotC_GeneModdingFacility.uc">
       <SubType>Content</SubType>
     </Content>

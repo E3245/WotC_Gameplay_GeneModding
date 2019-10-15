@@ -25,7 +25,7 @@ struct BodyParts
 };
 
 var localized string DisplayName;
-var protected localized string Summary;
+var protectedwrite localized string Summary;
 
 //	Used in UICommodity_GeneModUpgrade when building Gene Mod description.
 //	Informs the player that this Gene Mod cannot be added to the soldier because the limb is currently Augmented.
@@ -56,7 +56,8 @@ var localized string					m_strHasBeenDisabledByAugment_Arms;
 var localized string					m_strHasBeenDisabledByAugment_Legs;
 var localized string					m_strHasBeenDisabledByAugment_Skin;
 
-var config string strImage;						 //  image associated with this ability
+var config string strImage;						 //  image associated with this Gene Mod, used in popups.
+var config string strAbilityImage;				 //	 image used by automatically created pure passives.
 
 var config name AbilityName;
 var protected name AbilityStatMod;
