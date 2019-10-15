@@ -201,37 +201,49 @@ static function PatchFacility()
 
 static function RecolorGeneModAbilities()
 {
-    local X2AbilityTemplate         Template;
     local X2AbilityTemplateManager  AbilityTemplateManager;
 	local X2GeneModTemplate			GeneModTemplate;
 	local array<X2GeneModTemplate>	GeneModTemplates;
-	local int i;
 
     AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
 
 	foreach GeneModTemplates(GeneModTemplate)
 	{
-		Template = AbilityTemplateManager.FindAbilityTemplate(GeneModTemplate.AbilityName);
-		if (Template != none)
-		{
-			Template.AbilitySourceName = 'eAbilitySource_Commander';
+		RecolorGeneModAbility_Recursive(GeneModTemplate.AbilityName, AbilityTemplateManager);
+	}
+}
 
-			for (i = 0; i < Template.AbilityTargetEffects.Length; i++)
+static function RecolorGeneModAbility_Recursive(name AbilityName, X2AbilityTemplateManager AbilityTemplateManager)
+{
+	local X2AbilityTemplate	Template;
+	local name				AdditionalAbilityName;
+	local int i;
+
+	Template = AbilityTemplateManager.FindAbilityTemplate(AbilityName);
+
+	if (Template != none)
+	{
+		Template.AbilitySourceName = 'eAbilitySource_Commander';
+
+		for (i = 0; i < Template.AbilityTargetEffects.Length; i++)
+		{
+			if (X2Effect_Persistent(Template.AbilityTargetEffects[i]).BuffCategory == ePerkBuff_Passive)
 			{
-				if (X2Effect_Persistent(Template.AbilityTargetEffects[i]).BuffCategory == ePerkBuff_Passive)
-				{
-					X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
-				}
-			}
-			for (i = 0; i < Template.AbilityShooterEffects.Length; i++)
-			{
-				if (X2Effect_Persistent(Template.AbilityShooterEffects[i]).BuffCategory == ePerkBuff_Passive)
-				{
-					X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
-				}
+				X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
 			}
 		}
+		for (i = 0; i < Template.AbilityShooterEffects.Length; i++)
+		{
+			if (X2Effect_Persistent(Template.AbilityShooterEffects[i]).BuffCategory == ePerkBuff_Passive)
+			{
+				X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+			}
+		}
+	}
+	foreach Template.AdditionalAbilities(AdditionalAbilityName)
+	{
+		RecolorGeneModAbility_Recursive(AdditionalAbilityName, AbilityTemplateManager);
 	}
 }
 
