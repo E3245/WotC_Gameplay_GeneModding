@@ -114,6 +114,7 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 					UnitState.SetBaseMaxStat(NewStatName, NewMaxStat);
 
 					//Note the second one won't happen since you aren't allowed to assign wounded soldiers to GM
+					//	Actually we're allowed, but it doesn't matter, if the soldier is wounded, their HP will be taken care of further down the line. -Iridar. 
 					if(NewStatName != eStat_HP || !UnitState.IsInjured())
 					{
 						UnitState.SetCurrentStat(NewStatName, NewCurrentStat);

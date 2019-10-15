@@ -133,7 +133,13 @@ public static function array<X2GeneModTemplate> GetGeneModTemplates()
 
 private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitState)
 {
+	local XComGameState_HeadquartersXCom	XComHQ;
+	local bool								bHasBonus;
+	local ECharStatType						NewStatName;
+	local int								Boost;
+	local float MaxStat, NewMaxStat, NewCurrentStat;
 	local int j;
+	local int i;
 
 	for (j = 0; j < NewUnitState.AWCAbilities.Length; j++)
 	{
@@ -142,6 +148,49 @@ private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitSta
 			//	When this is set to "false", the soldier will not receive this ability when going on a mission
 			//	nor any AdditionalAbilities associated with it.
 			//NewUnitState.AWCAbilities[j].bUnlocked = false;
+
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.IntegratedWarfare_BoostGeneStats)
+			{
+				XComHQ = XComGameState_HeadquartersXCom(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom', true));
+				if (XComHQ != none)
+				{
+					bHasBonus = XComHQ.SoldierUnlockTemplates.Find('IntegratedWarfareUnlock') != INDEX_NONE;
+				}
+			}
+
+			//	Unapply GM stat changes.
+			for (i = 0; i < default.StatChanges.Length; i++)
+			{
+				//If it's cosmetic, then nothing should be done
+				if (!default.StatChanges[i].bUICosmetic) 
+				{
+					NewStatName = default.StatChanges[i].StatName;
+					Boost = default.StatChanges[i].StatModValue;
+
+					if (bHasBonus)
+					{
+						Boost += class'X2SoldierIntegratedWarfareUnlockTemplate'.default.StatBoostIncrement;
+					}
+
+					//Compensate if Beta Strike is enabled
+					if ((NewStatName == eStat_HP) && `SecondWaveEnabled('BetaStrike'))
+					{
+						Boost *= class'X2StrategyGameRulesetDataStructures'.default.SecondWaveBetaStrikeHealthMod;
+					}
+
+					//From PCS code in XCGS_Unit
+					MaxStat = NewUnitState.GetMaxStat(NewStatName);
+					NewMaxStat = MaxStat - Boost;
+					NewCurrentStat = int(NewUnitState.GetCurrentStat(NewStatName)) - Boost;
+					NewUnitState.SetBaseMaxStat(NewStatName, NewMaxStat);
+
+					//	Immediately change current stat if we're not modifying HP or if the soldier is not injured
+					if(NewStatName != eStat_HP || !NewUnitState.IsInjured())
+					{
+						NewUnitState.SetCurrentStat(NewStatName, NewCurrentStat);
+					}
+				}
+			}
 
 			NewUnitState.AWCAbilities.Remove(j, 1);
 
