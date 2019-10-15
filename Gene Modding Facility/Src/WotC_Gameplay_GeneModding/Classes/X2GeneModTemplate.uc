@@ -243,6 +243,8 @@ public static function int GetMyLimbIndex()
 			return 3;
 		case 'GMCat_skin':
 			return -1;
+		case 'GMCat_none':
+			return -1;
 		default:
 			return -1;
 	}
@@ -279,6 +281,8 @@ public static function BodyParts GetAugmentedOrGeneModdedBodyParts(const XComGam
 					Parts.Legs = true;
 					break;
 				case 'GMCat_skin':
+					break;
+				case 'GMCat_none':
 					break;
 				default:
 					break;
@@ -319,6 +323,8 @@ public static function string GetGMPreventedByAugmentationMessage(const XComGame
 		case 'GMCat_skin':
 			if (GetAugmentedBodyPercent(Parts) > 0.5f) return default.m_str_GMPrevented_ByAugmentation_Skin;
 			else return "";
+		case 'GMCat_none':
+			return "";
 		default:
 			return "";	//	Gene Mods with unknown category are allowed by default.
 	}
@@ -336,6 +342,8 @@ public static function string GetGMDisabledByWoundMessage(const XComGameState_Un
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+			return "";
+		case 'GMCat_none':
 			return "";
 		case 'GMCat_eyes':
 			if (Parts.Head) return default.m_strHasBeenDisabledByWound_Eyes;
@@ -369,6 +377,8 @@ public static function string GetGMDisabledByAugmentMessage(const XComGameState_
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+			return "";
+		case 'GMCat_none':
 			return "";
 		case 'GMCat_eyes':
 			if (Parts.Head) return default.m_strHasBeenDisabledByAugment_Eyes;
@@ -405,6 +415,8 @@ public static function string GetGMCanBeDisabledByAugmentWarningMessage(const XC
 		switch (default.GeneCategory)
 		{
 			case 'GMCat_brain':
+				return "";
+			case 'GMCat_none':
 				return "";
 			case 'GMCat_eyes':	//	Display warning if the soldier does not have this body part already augmented.
 				if (!Parts.Head) return default.m_strCanBeDisabledByAugment_Eyes;	
@@ -626,6 +638,7 @@ private static function string GetAugmentationItemCatThatDisablesThisGeneMod()
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+		case 'GMCat_none':
 			return "augmentation_none";
 		case 'GMCat_eyes': 
 			 return "augmentation_head";
