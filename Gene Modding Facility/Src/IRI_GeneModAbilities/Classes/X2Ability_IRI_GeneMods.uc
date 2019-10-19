@@ -242,6 +242,7 @@ static function X2AbilityTemplate Create_Berserk()
 	local X2Effect_IRI_Berserk_ActionPoints	ActionPointsEffect;
 	local X2AbilityTrigger_EventListener	Trigger;
 	local X2Effect_RemoveEffects			RemoveEffects;
+	local X2Condition_UnitEffects			EffectsCondition;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'IRI_Berserk');
 	
@@ -252,6 +253,14 @@ static function X2AbilityTemplate Create_Berserk()
 	Template.AbilityTargetStyle = default.SelfTarget;
 
 	AddCooldown(Template, default.BERSERK_COOLDOWN);
+
+	//	According to a bug report, Berserk + Battlelord bug out and give the soldier infinite actions.
+	//	Just in case, disabling the ability during Skirmisher interrupt / Scout Scamper
+	EffectsCondition = new class'X2Condition_UnitEffects';
+	EffectsCondition.AddExcludeEffect('Battlelord', 'AA_AbilityUnavailable');
+	EffectsCondition.AddExcludeEffect('SkirmisherInterrupt', 'AA_AbilityUnavailable');
+	EffectsCondition.AddExcludeEffect('IRI_ReactiveConcealment_Effect', 'AA_AbilityUnavailable');
+	Template.AbilityShooterConditions.AddItem(EffectsCondition);	
 
 	if (default.BERSERK_TRIGGERED_MANUALLY)
 	{

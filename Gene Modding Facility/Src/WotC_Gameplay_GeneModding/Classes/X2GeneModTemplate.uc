@@ -25,7 +25,7 @@ struct BodyParts
 };
 
 var localized string DisplayName;
-var protected localized string Summary;
+var protectedwrite localized string Summary;
 
 //	Used in UICommodity_GeneModUpgrade when building Gene Mod description.
 //	Informs the player that this Gene Mod cannot be added to the soldier because the limb is currently Augmented.
@@ -56,7 +56,8 @@ var localized string					m_strHasBeenDisabledByAugment_Arms;
 var localized string					m_strHasBeenDisabledByAugment_Legs;
 var localized string					m_strHasBeenDisabledByAugment_Skin;
 
-var config string strImage;						 //  image associated with this ability
+var config string strImage;						 //  image associated with this Gene Mod, used in popups.
+var config string strAbilityImage;				 //	 image used by automatically created pure passives.
 
 var config name AbilityName;
 var protected name AbilityStatMod;
@@ -132,7 +133,13 @@ public static function array<X2GeneModTemplate> GetGeneModTemplates()
 
 private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitState)
 {
+	local XComGameState_HeadquartersXCom	XComHQ;
+	local bool								bHasBonus;
+	local ECharStatType						NewStatName;
+	local int								Boost;
+	local float MaxStat, NewMaxStat, NewCurrentStat;
 	local int j;
+	local int i;
 
 	for (j = 0; j < NewUnitState.AWCAbilities.Length; j++)
 	{
@@ -141,6 +148,49 @@ private static function bool DisableGeneModForUnit(XComGameState_Unit NewUnitSta
 			//	When this is set to "false", the soldier will not receive this ability when going on a mission
 			//	nor any AdditionalAbilities associated with it.
 			//NewUnitState.AWCAbilities[j].bUnlocked = false;
+
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.IntegratedWarfare_BoostGeneStats)
+			{
+				XComHQ = XComGameState_HeadquartersXCom(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom', true));
+				if (XComHQ != none)
+				{
+					bHasBonus = XComHQ.SoldierUnlockTemplates.Find('IntegratedWarfareUnlock') != INDEX_NONE;
+				}
+			}
+
+			//	Unapply GM stat changes.
+			for (i = 0; i < default.StatChanges.Length; i++)
+			{
+				//If it's cosmetic, then nothing should be done
+				if (!default.StatChanges[i].bUICosmetic) 
+				{
+					NewStatName = default.StatChanges[i].StatName;
+					Boost = default.StatChanges[i].StatModValue;
+
+					if (bHasBonus)
+					{
+						Boost += class'X2SoldierIntegratedWarfareUnlockTemplate'.default.StatBoostIncrement;
+					}
+
+					//Compensate if Beta Strike is enabled
+					if ((NewStatName == eStat_HP) && `SecondWaveEnabled('BetaStrike'))
+					{
+						Boost *= class'X2StrategyGameRulesetDataStructures'.default.SecondWaveBetaStrikeHealthMod;
+					}
+
+					//From PCS code in XCGS_Unit
+					MaxStat = NewUnitState.GetMaxStat(NewStatName);
+					NewMaxStat = MaxStat - Boost;
+					NewCurrentStat = int(NewUnitState.GetCurrentStat(NewStatName)) - Boost;
+					NewUnitState.SetBaseMaxStat(NewStatName, NewMaxStat);
+
+					//	Immediately change current stat if we're not modifying HP or if the soldier is not injured
+					if(NewStatName != eStat_HP || !NewUnitState.IsInjured())
+					{
+						NewUnitState.SetCurrentStat(NewStatName, NewCurrentStat);
+					}
+				}
+			}
 
 			NewUnitState.AWCAbilities.Remove(j, 1);
 
@@ -193,6 +243,8 @@ public static function int GetMyLimbIndex()
 			return 3;
 		case 'GMCat_skin':
 			return -1;
+		case 'GMCat_none':
+			return -1;
 		default:
 			return -1;
 	}
@@ -229,6 +281,8 @@ public static function BodyParts GetAugmentedOrGeneModdedBodyParts(const XComGam
 					Parts.Legs = true;
 					break;
 				case 'GMCat_skin':
+					break;
+				case 'GMCat_none':
 					break;
 				default:
 					break;
@@ -269,6 +323,8 @@ public static function string GetGMPreventedByAugmentationMessage(const XComGame
 		case 'GMCat_skin':
 			if (GetAugmentedBodyPercent(Parts) > 0.5f) return default.m_str_GMPrevented_ByAugmentation_Skin;
 			else return "";
+		case 'GMCat_none':
+			return "";
 		default:
 			return "";	//	Gene Mods with unknown category are allowed by default.
 	}
@@ -286,6 +342,8 @@ public static function string GetGMDisabledByWoundMessage(const XComGameState_Un
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+			return "";
+		case 'GMCat_none':
 			return "";
 		case 'GMCat_eyes':
 			if (Parts.Head) return default.m_strHasBeenDisabledByWound_Eyes;
@@ -319,6 +377,8 @@ public static function string GetGMDisabledByAugmentMessage(const XComGameState_
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+			return "";
+		case 'GMCat_none':
 			return "";
 		case 'GMCat_eyes':
 			if (Parts.Head) return default.m_strHasBeenDisabledByAugment_Eyes;
@@ -355,6 +415,8 @@ public static function string GetGMCanBeDisabledByAugmentWarningMessage(const XC
 		switch (default.GeneCategory)
 		{
 			case 'GMCat_brain':
+				return "";
+			case 'GMCat_none':
 				return "";
 			case 'GMCat_eyes':	//	Display warning if the soldier does not have this body part already augmented.
 				if (!Parts.Head) return default.m_strCanBeDisabledByAugment_Eyes;	
@@ -576,6 +638,7 @@ private static function string GetAugmentationItemCatThatDisablesThisGeneMod()
 	switch (default.GeneCategory)
 	{
 		case 'GMCat_brain':
+		case 'GMCat_none':
 			return "augmentation_none";
 		case 'GMCat_eyes': 
 			 return "augmentation_head";

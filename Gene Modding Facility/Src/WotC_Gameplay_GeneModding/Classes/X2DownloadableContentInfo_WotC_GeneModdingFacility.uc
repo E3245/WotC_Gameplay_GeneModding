@@ -175,6 +175,8 @@ static event OnPostTemplatesCreated()
 {
 	PatchFacility();
 	UpdateSecondWaveOptionsList();
+	RecolorGeneModAbilities();
+	AssignImageAndLocalizationToPurePassives();
 }
 
 static function PatchFacility() 
@@ -194,6 +196,94 @@ static function PatchFacility()
 		StaffSlotDef.StaffSlotTemplateName = 'GeneModdingChamberSoldierStaffSlot';
 		StaffSlotDef.bStartsLocked = true;
 		Template.StaffSlotDefs.AddItem(StaffSlotDef);
+	}
+}
+
+static function RecolorGeneModAbilities()
+{
+    local X2AbilityTemplateManager  AbilityTemplateManager;
+	local X2GeneModTemplate			GeneModTemplate;
+	local array<X2GeneModTemplate>	GeneModTemplates;
+
+    AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
+
+	foreach GeneModTemplates(GeneModTemplate)
+	{
+		RecolorGeneModAbility_Recursive(GeneModTemplate.AbilityName, AbilityTemplateManager);
+	}
+}
+
+static function RecolorGeneModAbility_Recursive(name AbilityName, X2AbilityTemplateManager AbilityTemplateManager)
+{
+	local X2AbilityTemplate	Template;
+	local name				AdditionalAbilityName;
+	local int i;
+
+	Template = AbilityTemplateManager.FindAbilityTemplate(AbilityName);
+
+	if (Template != none)
+	{
+		Template.AbilitySourceName = 'eAbilitySource_Commander';
+
+		for (i = 0; i < Template.AbilityTargetEffects.Length; i++)
+		{
+			if (X2Effect_Persistent(Template.AbilityTargetEffects[i]).BuffCategory == ePerkBuff_Passive)
+			{
+				X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+			}
+		}
+		for (i = 0; i < Template.AbilityShooterEffects.Length; i++)
+		{
+			if (X2Effect_Persistent(Template.AbilityShooterEffects[i]).BuffCategory == ePerkBuff_Passive)
+			{
+				X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+			}
+		}
+	}
+	foreach Template.AdditionalAbilities(AdditionalAbilityName)
+	{
+		RecolorGeneModAbility_Recursive(AdditionalAbilityName, AbilityTemplateManager);
+	}
+}
+
+static function AssignImageAndLocalizationToPurePassives()
+{
+    local X2AbilityTemplate         Template;
+    local X2AbilityTemplateManager  AbilityTemplateManager;
+	local X2GeneModTemplate			GeneModTemplate;
+	local array<X2GeneModTemplate>	GeneModTemplates;
+
+    AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	GeneModTemplates = class'X2GeneModTemplate'.static.GetGeneModTemplates();
+
+	foreach GeneModTemplates(GeneModTemplate)
+	{
+		if (Right(String(GeneModTemplate.AbilityName), 10) == "_GMPassive")
+		{
+			Template = AbilityTemplateManager.FindAbilityTemplate(GeneModTemplate.AbilityName);
+
+			if (Template != none)
+			{
+				if (Template.LocFriendlyName == "") 
+				{
+					Template.LocFriendlyName = GeneModTemplate.DisplayName;
+					X2Effect_Persistent(Template.AbilityTargetEffects[0]).FriendlyName = GeneModTemplate.DisplayName;
+				}
+				if (Template.LocLongDescription == "") 
+				{
+					Template.LocLongDescription = GeneModTemplate.Summary;
+					X2Effect_Persistent(Template.AbilityTargetEffects[0]).FriendlyDescription = GeneModTemplate.Summary;
+				}
+				if (Template.LocHelpText == "") Template.LocHelpText = GeneModTemplate.Summary;
+				
+				if (GeneModTemplate.strAbilityImage != "") 
+				{
+					Template.IconImage = GeneModTemplate.strAbilityImage;
+					X2Effect_Persistent(Template.AbilityTargetEffects[0]).IconImage = GeneModTemplate.strAbilityImage;
+				}
+			}
+		}
 	}
 }
 
