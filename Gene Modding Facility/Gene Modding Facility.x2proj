@@ -9,6 +9,10 @@ tags= gameplay, war of the chosen, Gene Mod, EW, &gt;remove PCS</Description>
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>Gene Modding Facility</AssemblyName>
     <RootNamespace>Gene Modding Facility</RootNamespace>
+    <ProjectGuid>{fb36e11b-6a6d-4c7f-8210-153452e2a8af}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Config\Abilities\XComAI.ini">

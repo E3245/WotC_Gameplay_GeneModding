@@ -3,15 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # XCOM ModBuddy Solution File, Format Version 11.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "Gene Modding Facility", "Gene Modding Facility\Gene Modding Facility.x2proj", "{A971A392-1369-4D84-B78F-D143FE5698EE}"
+Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "Gene Modding Facility", "Gene Modding Facility\Gene Modding Facility.x2proj", "{FB36E11B-6A6D-4C7F-8210-153452E2A8AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|XCOM 2 = Debug|XCOM 2
 		Default|XCOM 2 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A971A392-1369-4D84-B78F-D143FE5698EE}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
-		{A971A392-1369-4D84-B78F-D143FE5698EE}.Default|XCOM 2.Build.0 = Default|XCOM 2
+		{FB36E11B-6A6D-4C7F-8210-153452E2A8AF}.Debug|XCOM 2.ActiveCfg = Debug|XCOM 2
+		{FB36E11B-6A6D-4C7F-8210-153452E2A8AF}.Debug|XCOM 2.Build.0 = Debug|XCOM 2
+		{FB36E11B-6A6D-4C7F-8210-153452E2A8AF}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
+		{FB36E11B-6A6D-4C7F-8210-153452E2A8AF}.Default|XCOM 2.Build.0 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -139,6 +139,150 @@ static event OnLoadedSavedGame()
 {
 	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress WotC_Gameplay_GeneModding");
 	class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().ConsoleCommand("suppress IRIPOPUP");
+
+	PatchInfirmanyForSavedGame();
+}
+
+static protected function PatchInfirmanyForSavedGame()
+{
+	local XComGameState_FacilityXCom FacilityState;
+	local XComGameStateHistory History;
+	local XComGameState NewGameState;
+
+	History = `XCOMHISTORY;
+
+	foreach History.IterateByClassType(class'XComGameState_FacilityXCom', FacilityState)
+	{
+		if (FacilityState.GetMyTemplateName() == 'AdvancedWarfareCenter')
+		{
+			NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Gene Modding: Patching infirmary for existing campaign");
+			FacilityState = XComGameState_FacilityXCom(NewGameState.ModifyStateObject(class'XComGameState_FacilityXCom', FacilityState.ObjectID));
+
+			SyncFacilityStaffSlots(NewGameState, FacilityState);
+			History.AddGameStateToHistory(NewGameState);
+
+			break;
+		}
+	}
+}
+
+// Basically copy paste of X2DownloadableContentInfo_DLC_Day90::AddNewStaffSlots, but takes a facility as argument
+static protected function SyncFacilityStaffSlots (XComGameState NewGameState, XComGameState_FacilityXCom FacilityState)
+{
+	local X2StaffSlotTemplate StaffSlotTemplate;
+	local XComGameState_StaffSlot StaffSlotState, ExistingStaffSlot, LinkedStaffSlotState;
+	local X2StrategyElementTemplateManager StratMgr;
+	local X2FacilityTemplate FacilityTemplate;
+	local StaffSlotDefinition SlotDef;
+	local int i, j;
+	local bool bReplaceSlot;
+	local array<int> SkipIndices;
+	
+	FacilityTemplate = FacilityState.GetMyTemplate();
+	StratMgr = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
+
+	for (i = 0; i < FacilityTemplate.StaffSlotDefs.Length; i++)
+	{
+		if(SkipIndices.Find(i) == INDEX_NONE)
+		{
+			SlotDef = FacilityTemplate.StaffSlotDefs[i];
+			// Check to see if the existing staff slot at this index no longer matches the template and needs to be replaced
+			bReplaceSlot = false;
+			if(i < FacilityState.StaffSlots.Length && FacilityState.StaffSlots[i].ObjectID != 0)
+			{
+				ExistingStaffSlot = FacilityState.GetStaffSlot(i);
+				if(ExistingStaffSlot.GetMyTemplateName() != SlotDef.StaffSlotTemplateName)
+				{
+					bReplaceSlot = true;
+				}
+			}
+
+			if(i >= FacilityState.StaffSlots.Length || bReplaceSlot) // Only add a new staff slot if it doesn't already exist or needs to be replaced
+			{
+				StaffSlotTemplate = X2StaffSlotTemplate(StratMgr.FindStrategyElementTemplate(SlotDef.StaffSlotTemplateName));
+
+				if(StaffSlotTemplate != none)
+				{
+					// Create slot state and link to this facility
+					StaffSlotState = StaffSlotTemplate.CreateInstanceFromTemplate(NewGameState);
+					StaffSlotState.Facility = FacilityState.GetReference();
+
+					// Check for starting the slot locked
+					if(SlotDef.bStartsLocked)
+					{
+						StaffSlotState.LockSlot();
+					}
+
+					if(bReplaceSlot)
+					{
+						FacilityState.StaffSlots[i] = StaffSlotState.GetReference();
+					}
+					else
+					{
+						FacilityState.StaffSlots.AddItem(StaffSlotState.GetReference());
+					}
+
+					// Check rest of list for partner slot
+					if(SlotDef.LinkedStaffSlotTemplateName != '')
+					{
+						StaffSlotTemplate = X2StaffSlotTemplate(StratMgr.FindStrategyElementTemplate(SlotDef.LinkedStaffSlotTemplateName));
+
+						if(StaffSlotTemplate != none)
+						{
+							for(j = (i + 1); j < FacilityTemplate.StaffSlotDefs.Length; j++)
+							{
+								SlotDef = FacilityTemplate.StaffSlotDefs[j];
+
+								if(SkipIndices.Find(j) == INDEX_NONE && SlotDef.StaffSlotTemplateName == StaffSlotTemplate.DataName)
+								{
+									// Check to see if the existing staff slot at this index no longer matches the template and needs to be replaced
+									bReplaceSlot = false;
+									if(j < FacilityState.StaffSlots.Length && FacilityState.StaffSlots[j].ObjectID != 0)
+									{
+										ExistingStaffSlot = FacilityState.GetStaffSlot(j);
+										if(ExistingStaffSlot.GetMyTemplateName() != SlotDef.StaffSlotTemplateName)
+										{
+											bReplaceSlot = true;
+										}
+									}
+
+									if(j >= FacilityState.StaffSlots.Length || bReplaceSlot) // Only add a new staff slot if it doesn't already exist or needs to be replaced
+									{
+										// Create slot state and link to this facility
+										LinkedStaffSlotState = StaffSlotTemplate.CreateInstanceFromTemplate(NewGameState);
+										LinkedStaffSlotState.Facility = FacilityState.GetReference();
+
+										// Check for starting the slot locked
+										if(SlotDef.bStartsLocked)
+										{
+											LinkedStaffSlotState.LockSlot();
+										}
+
+										// Link the slots
+										StaffSlotState.LinkedStaffSlot = LinkedStaffSlotState.GetReference();
+										LinkedStaffSlotState.LinkedStaffSlot = StaffSlotState.GetReference();
+
+										if(bReplaceSlot)
+										{
+											FacilityState.StaffSlots[j] = LinkedStaffSlotState.GetReference();
+										}
+										else
+										{
+											FacilityState.StaffSlots.AddItem(LinkedStaffSlotState.GetReference());
+										}
+
+										// Add index to list to be skipped since we already added it
+										SkipIndices.AddItem(j);
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 /// <summary>
