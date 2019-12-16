@@ -11,7 +11,9 @@ class UIAlert_GeneMod extends UIAlert;
 enum UIAlert_GeneMod
 {
 	eAlert_GeneModdingComplete,
-	eAlert_GeneModNegativeAbilityAcquired
+	eAlert_GeneModNegativeAbilityAcquired,
+	eAlert_GeneModDestroyedByCriticalWound,
+	eAlert_NewGeneModAvailable
 };
 
 var public localized string m_strTitleLabelComplete;
@@ -62,7 +64,7 @@ simulated function Name GetLibraryID()
 	case 'eAlert_GeneModdingComplete':						return 'Alert_TrainingComplete';
 	case 'eAlert_GeneModNegativeAbilityAcquired':			return 'Alert_NegativeSoldierEvent';
 	case 'eAlert_NewGeneModAvailable':						return 'Alert_Complete';
-	case 'eAlert_GeneModDestroyedByCriticalWoundn':			return 'Alert_AssignStaff';
+	case 'eAlert_GeneModDestroyedByCriticalWound':			return 'Alert_AssignStaff';
 	default:
 		return '';
 	}

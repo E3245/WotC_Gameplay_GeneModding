@@ -662,7 +662,7 @@ simulated function Tracker RetrieveTrackerInfoFromListIndex(int ListIndex)
 			return arrTracker[i];
 	}
 	
-	`Redscreen("Gene modding: Failed to retrieve info of List Index " $ ListIndex);
+//	`Redscreen("Gene modding: Failed to retrieve info of List Index " $ ListIndex);
 }
 
 //-----------------------------------------------------------------------------
@@ -736,7 +736,7 @@ simulated protected function ConfirmPurchasePopupCallback (name eAction)
         }
         else
         {
-            `Redscreen("Gene modding: Failed to unlock option even though checks in OnPurchaseClicked have passed");
+//            `Redscreen("Gene modding: Failed to unlock option even though checks in OnPurchaseClicked have passed");
         }
     }
 }

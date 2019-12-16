@@ -66,11 +66,15 @@ A: Yes, it should work out of the box.
 
 [b]Q: How do I add my own Gene Mods?[/b]
 
-A: Guide coming soon.
+A: https://steamcommunity.com/workshop/filedetails/discussion/1877861493/1609400247636005211/
 
 [b]Q: Where is the rest of the classic Gene Mods? I want the classic Gene Mods![/b]
 
-A: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1561030099]Mitzruti's Perk Pack[/url] has them now.
+A: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1561030099]Mitzruti Perk Pack[/url] for WotC.
+
+[b]Q: I want MOAR![/b]
+
+A: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1885319290][WotC] Gene Mods - Iridar's Pack[/url].
 
 [b]Q: Vanilla version?[/b]
 
@@ -100,19 +104,7 @@ A: Not really, no.
 [h1][b]LOG[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
-Release ver: 1.013:
+Release ver: 1.021:
 [list]
-     [*]Fix for Chaotic Mind appearing and not dealing damage.
-     [*]Restricted all robotic units from getting Gene Mods.
-[/list]
-
-Release ver: 1.010:
-[list]
-     [*]NEW SECOND WAVE OPTION: Added Biosynthesis SWO that allows Gene Mods and Augments to coexist without affecting each other.
-     [*]Moved Armor Condition to CanEverBeValid. 
-	 [*]Moved Cheetah and Lizard stat bonuses to Gene Mod Template. 
-	 [*]Gene Mods without localization will now specify ability localization.
-	 [*]Balancing changes to operation time for Cheetah and Adaptation.
-	 [*]Added arms category for modders. To use it, you need a gene mod with the GeneCategory set to: GMCat_arms.
-	 [*]Added misc category for modders.
+     [*]Removed redscreen spam.
 [/list]
