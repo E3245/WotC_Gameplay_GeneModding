@@ -542,7 +542,7 @@ static function XComGameState_HeadquartersProjectGeneModOperation GetGeneModProj
 			return GeneProject;
 		}
 	}
-	`Redscreen("Could not find XComGameState_HeadquartersProjectGeneModOperation in History!");
+//	`Redscreen("Could not find XComGameState_HeadquartersProjectGeneModOperation in History!");
 	return none;
 }
 
