@@ -394,7 +394,7 @@ static function X2AbilityTemplate Create_SecondaryHeart_Revive()
 	Trigger.ListenerData.EventID = 'PlayerTurnBegun';
 	Trigger.ListenerData.Deferral = ELD_OnStateSubmitted;
 	Trigger.ListenerData.Filter = eFilter_Player;
-	Trigger.ListenerData.Priority = 1;
+	//Trigger.ListenerData.Priority = 1;
 	Trigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
 	Template.AbilityTriggers.AddItem(Trigger);
 
