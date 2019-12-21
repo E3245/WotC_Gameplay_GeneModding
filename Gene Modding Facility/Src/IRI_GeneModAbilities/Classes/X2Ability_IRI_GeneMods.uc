@@ -25,7 +25,8 @@ var config float CHAOTIC_MIND_RADIUS_METERS;
 var config int BERSERK_COOLDOWN;
 var config int BERSERK_DURATION;
 var config bool BERSERK_REPLACES_PANIC;
-//var config bool BERSERK_TRIGGERED_BY_DAMAGE;
+var config bool BERSERK_TRIGGERED_BY_ATTACKS;
+var config int BERSERK_TRIGGERED_BY_ATTACKS_TRIGGER_CHANCE;
 var config bool BERSERK_TRIGGERED_MANUALLY;
 
 //	Secondary Heart
@@ -273,17 +274,15 @@ static function X2AbilityTemplate Create_Berserk()
 	{
 		Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	}
-	//	Bugs out the soldier.
-	/*
-	if (default.BERSERK_TRIGGERED_BY_DAMAGE)
+	if (default.BERSERK_TRIGGERED_BY_ATTACKS)
 	{
 		Trigger = new class'X2AbilityTrigger_EventListener';	
-		Trigger.ListenerData.EventID = 'UnitTakeEffectDamage';
+		Trigger.ListenerData.EventID = 'AbilityActivated';
 		Trigger.ListenerData.Deferral = ELD_OnStateSubmitted;
-		Trigger.ListenerData.Filter = eFilter_Unit;
-		Trigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
+		Trigger.ListenerData.Filter = eFilter_None;
+		Trigger.ListenerData.EventFn = static.BerserkAttack_EventListener;
 		Template.AbilityTriggers.AddItem(Trigger);
-	}*/
+	}
 	if (default.BERSERK_REPLACES_PANIC)
 	{
 		Trigger = new class'X2AbilityTrigger_EventListener';	
@@ -338,7 +337,54 @@ static function EventListenerReturn Berserk_EventListener(Object EventData, Obje
 	}
     return ELR_InterruptEvent;
 }
+static function EventListenerReturn BerserkAttack_EventListener(Object EventData, Object EventSource, XComGameState GameState, name InEventID, Object CallbackData)
+{
+	local XComGameStateContext_Ability	AbilityContext;
+	local XComGameState_Ability			AbilityState;
+	local XComGameState_Ability			BersAbilityState;
+	local XComGameState_Unit			SourceUnit, TargetUnit;
+		
+	AbilityContext = XComGameStateContext_Ability(GameState.GetContext());
+	AbilityState = XComGameState_Ability(EventData);
+	SourceUnit = XComGameState_Unit(EventSource);
+	TargetUnit = XComGameState_Unit(GameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
+	BersAbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(TargetUnit.FindAbility('IRI_Berserk').ObjectID));
 
+	//	If a damaging offensive ability is activated against a unit that has Berserk by an enemy, and it hits
+	if (BersAbilityState != none && SourceUnit != none && AbilityState != none &&
+		SourceUnit.IsEnemyUnit(TargetUnit) && AbilityContext.IsResultContextHit() && AbilityState.GetMyTemplate().Hostility == eHostility_Offensive && 
+		AbilityDealsDamage(AbilityState.GetMyTemplate()))
+	{	
+		//	All checks passed, activate Berserk
+		if (`SYNC_RAND_STATIC(101) < default.BERSERK_TRIGGERED_BY_ATTACKS_TRIGGER_CHANCE)
+		{
+			BersAbilityState.AbilityTriggerAgainstSingleTarget(TargetUnit.GetReference(), false);
+		}
+	}
+    return ELR_InterruptEvent;
+}
+
+static function bool AbilityDealsDamage(const X2AbilityTemplate Template)
+{
+	local X2Effect Effect;
+
+	foreach Template.AbilityTargetEffects(Effect)
+	{
+		//the ApplyOnHit condition allows to ignore the default.WeaponUpgradeMissDamage effect
+		if (X2Effect_ApplyWeaponDamage(Effect) != none && Effect.bApplyOnHit)	
+		{
+			return true;
+		}
+	}
+	foreach Template.AbilityMultiTargetEffects(Effect)
+	{
+		if (X2Effect_ApplyWeaponDamage(Effect) != none && Effect.bApplyOnHit)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 //	==========================================
 //	******************************************
