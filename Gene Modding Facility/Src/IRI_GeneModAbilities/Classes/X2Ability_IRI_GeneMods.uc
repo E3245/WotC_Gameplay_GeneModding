@@ -25,7 +25,7 @@ var config float CHAOTIC_MIND_RADIUS_METERS;
 var config int BERSERK_COOLDOWN;
 var config int BERSERK_DURATION;
 var config bool BERSERK_REPLACES_PANIC;
-var config bool BERSERK_TRIGGERED_BY_DAMAGE;
+//var config bool BERSERK_TRIGGERED_BY_DAMAGE;
 var config bool BERSERK_TRIGGERED_MANUALLY;
 
 //	Secondary Heart
@@ -260,6 +260,7 @@ static function X2AbilityTemplate Create_Berserk()
 	EffectsCondition.AddExcludeEffect('Battlelord', 'AA_AbilityUnavailable');
 	EffectsCondition.AddExcludeEffect('SkirmisherInterrupt', 'AA_AbilityUnavailable');
 	EffectsCondition.AddExcludeEffect('IRI_ReactiveConcealment_Effect', 'AA_AbilityUnavailable');
+	EffectsCondition.AddExcludeEffect('IRI_KingOfTheHill_Effect', 'AA_AbilityUnavailable');	//	From Duke Nukem's mod
 	Template.AbilityShooterConditions.AddItem(EffectsCondition);	
 
 	if (default.BERSERK_TRIGGERED_MANUALLY)
@@ -272,7 +273,8 @@ static function X2AbilityTemplate Create_Berserk()
 	{
 		Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	}
-
+	//	Bugs out the soldier.
+	/*
 	if (default.BERSERK_TRIGGERED_BY_DAMAGE)
 	{
 		Trigger = new class'X2AbilityTrigger_EventListener';	
@@ -281,7 +283,7 @@ static function X2AbilityTemplate Create_Berserk()
 		Trigger.ListenerData.Filter = eFilter_Unit;
 		Trigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
 		Template.AbilityTriggers.AddItem(Trigger);
-	}
+	}*/
 	if (default.BERSERK_REPLACES_PANIC)
 	{
 		Trigger = new class'X2AbilityTrigger_EventListener';	
