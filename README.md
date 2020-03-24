@@ -21,8 +21,9 @@ If you decide you want to contribute, please follow these conventions when submi
 
 - Create a issue in Github for any new features, changes, bugfixes
 - Create a pull request detailing what has changed/added and **reference that tracking issue** created above.
-- Comment your code and changes. Be responsible for the comments you've written.
-- Clear your committed code of any bugs
-- Test your build and make sure it works properly
+- Comment your code and changes. Remember, you're responsible for the comments you've written.
+- Add comments that reference the issue that the PR will resolve (e.g. Issue #758) in your committed code.
+- Clear your committed code of any compiler warnings or errors.
+- Test your build and make sure it works properly and does not break other features.
 
-Failure to follow any of these points above will have their pull request rejected.
+Failure to follow any of these points above will have their pull request rejected until it's resolved.
