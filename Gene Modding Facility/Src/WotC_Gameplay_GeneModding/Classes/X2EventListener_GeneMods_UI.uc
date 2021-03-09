@@ -48,9 +48,12 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 
 		if (ProjectState != none)
 		{
-			OverrideTuple.Data[0].s = StaffSlot.GetBonusDisplayString();
-			`LOG("Tuple.Data[0].s = " $ OverrideTuple.Data[0].s ,, 'WotC_Gameplay_GeneModding');
-			OverrideTuple.Data[1].b = true;
+			// Start Issue 22
+			OverrideTuple.Data[0].b = true;
+			OverrideTuple.Data[1].s = StaffSlot.GetBonusDisplayString();
+			`LOG("Tuple.Data[1].s = " $ OverrideTuple.Data[1].s ,, 'WotC_Gameplay_GeneModding');
+			//OverrideTuple.Data[1].b = true;
+			// End Issue 22
 			OverrideTuple.Data[3].i = ProjectState.GetCurrentNumHoursRemaining();
 		}
 	}
