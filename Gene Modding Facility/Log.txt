@@ -1,5 +1,12 @@
 History of Changes:
 
+Release ver: 1.021:
+[list]
+     [*]Removed redscreen and log spam.
+	 [*]Fixed Secondary Heart glitching out if soldier dies to Overwatch.
+	 [*]Fixed Berzerker Genes granting infinite turn actions on Duke, Brawler, and potentially other classes.
+[/list]
+
 Release ver: 1.020:
 [list]
      [*]Fixed bug where you have to rebuild the Infirmary to get the slot to show up.

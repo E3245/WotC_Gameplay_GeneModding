@@ -39,7 +39,7 @@ Iridar helped me a lot with this mod, so here's his Patreon if you feel like don
 [h1][b]KNOWN ISSUES[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 [list]
-     [*]When you begin a Gene Mod operation, the soldiers status is blank. This is because this feature is not released in the stable highlander yet and Detailed Soldier List doesn't support that feature.
+     [*]None so far.
 [/list]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 [h1][b]TODO[/b][/h1]
@@ -93,6 +93,7 @@ A: Not really, no.
      [*]PZ for her Psionic Training mod. Without this mod, I would not been able to do this correctly.
      [*]Oni for her Laboratory Already Better mod. I would not have found those particular UI elements that are now used in the custom UI screen, and for code that makes Gene Modding statuses appear in the Events.
      [*]robojumper, Xymanek / Astral Descend, and others for helping me with troubleshooting and additional code snippets.
+	 [*]RustyDios for fixing the Status Display not showing up.
 [/list]
 
 [h1]Thumbnail:[/h1]
@@ -106,9 +107,7 @@ A: Not really, no.
 [h1][b]LOG[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
-Release ver: 1.021:
+Release ver: 1.022:
 [list]
-     [*]Removed redscreen and log spam.
-	 [*]Fixed Secondary Heart glitching out if soldier dies to Overwatch.
-	 [*]Fixed Berzerker Genes granting infinite turn actions on Duke, Brawler, and potentially other classes.
+     [*]Fixed status display issue.
 [/list]
