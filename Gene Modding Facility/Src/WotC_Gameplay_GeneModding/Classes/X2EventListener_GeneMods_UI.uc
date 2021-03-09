@@ -14,8 +14,8 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 	local CHEventListenerTemplate Template;
 	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'UI_Armory_GeneMod');
 
-	Template.AddCHEvent('CustomizeStatusStringsSeparate', UIArmory_UpdateStatuses, ELD_Immediate);
-
+	Template.AddCHEvent('OverridePersonnelStatus', UIArmory_UpdateStatuses, ELD_Immediate);
+	
 	Template.AddCHEvent('OnResearchReport', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 	Template.AddCHEvent('UpgradeCompleted', UIArmory_ShowNewGeneModsPopUp, ELD_OnStateSubmitted);
 
@@ -27,6 +27,8 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 	return Template;
 }
 
+//	This Event Listener runs whenever the CHL displays a UIPersonnel_ListItem
+//	It is used to adjust the status display
 static protected function EventListenerReturn UIArmory_UpdateStatuses(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
 	local XComGameState_Unit								Unit;
@@ -35,9 +37,9 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 	local XComGameState_HeadquartersProjectGeneModOperation ProjectState;
 
 	OverrideTuple = XComLWTuple(EventData);
-	if (OverrideTuple == none || OverrideTuple.Id != 'CustomizeStatusStringsSeparate') return ELR_NoInterrupt;
+	if (OverrideTuple == none || OverrideTuple.Id != 'OverridePersonnelStatus') return ELR_NoInterrupt;
 
-	`LOG("Event CustomizeStatusStringsSeparate triggered",, 'WotC_Gameplay_GeneModding');
+	`LOG("Event OverridePersonnelStatus triggered",, 'WotC_Gameplay_GeneModding');
 	//This is the correct event, get unit and assigned staff slot
 	Unit = XComGameState_Unit(EventSource);
 	StaffSlot = Unit.GetStaffSlot();
@@ -48,10 +50,14 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 
 		if (ProjectState != none)
 		{
-			OverrideTuple.Data[0].s = StaffSlot.GetBonusDisplayString();
+			OverrideTuple.Data[0].s = StaffSlot.GetBonusDisplayString();	//status string
 			`LOG("Tuple.Data[0].s = " $ OverrideTuple.Data[0].s ,, 'WotC_Gameplay_GeneModding');
-			OverrideTuple.Data[1].b = true;
-			OverrideTuple.Data[3].i = ProjectState.GetCurrentNumHoursRemaining();
+			//OverrideTuple.Data[1].s = "";	//time label
+			//OverrideTuple.Data[2].s = "";	//time value
+			OverrideTuple.Data[3].i = ProjectState.GetCurrentNumHoursRemaining();	//time number
+			OverrideTuple.Data[4].i = eUIState_Warning;	//colour from EUI State - see UI Utilities_Colours
+			OverrideTuple.Data[5].b = false; 	//false means don't hide time value. true means hide.
+			OverrideTuple.Data[6].b = false;	//convert time to hours - also handled by other mods
 		}
 	}
 
