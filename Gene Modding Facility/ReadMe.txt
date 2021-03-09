@@ -2,6 +2,8 @@
 [h1][b]DESCRIPTION[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
+We're now [url=https://github.com/E3245/WotC_Gameplay_GeneModding]Open Source![/url]
+
 PCSes are the lame versions of Gene mods, so I decided to make a mod that allows a soldier to undergo Genetic Modification. In addition to that, modders can quickly make their own Gene mods that this mod recognizes. 
 
 This mod adds a new upgrade to the Infirmary (Advanced Warfare Center): the Gene Modification Chamber. This should not conflict with other mods that require the Hypervital Chamber upgrade to do their own thing, however, we edited the map and made the previous Hypervitalization Chamber assets to appear when you have the Gene Modification Upgrade facility upgrade installed.
@@ -106,5 +108,7 @@ A: Not really, no.
 
 Release ver: 1.021:
 [list]
-     [*]Removed redscreen spam.
+     [*]Removed redscreen and log spam.
+	 [*]Fixed Secondary Heart glitching out if soldier dies to Overwatch.
+	 [*]Fixed Berzerker Genes granting infinite turn actions on Duke, Brawler, and potentially other classes.
 [/list]
