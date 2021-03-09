@@ -52,12 +52,12 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 		{
 			OverrideTuple.Data[0].s = StaffSlot.GetBonusDisplayString();	//status string
 			`LOG("Tuple.Data[0].s = " $ OverrideTuple.Data[0].s ,, 'WotC_Gameplay_GeneModding');
-			//OverrideTuple.Data[1].s = "";	//time label
-			//OverrideTuple.Data[2].s = "";	//time value
+			OverrideTuple.Data[1].s = "";	//time label
+			OverrideTuple.Data[2].s = "";	//time value
 			OverrideTuple.Data[3].i = ProjectState.GetCurrentNumHoursRemaining();	//time number
-			OverrideTuple.Data[4].i = eUIState_Warning;	//colour from EUI State - see UI Utilities_Colours
+			OverrideTuple.Data[4].i = eUIState_Warning2;	//colour from EUI State - see UI Utilities_Colours
 			OverrideTuple.Data[5].b = false; 	//false means don't hide time value. true means hide.
-			OverrideTuple.Data[6].b = false;	//convert time to hours - also handled by other mods
+			OverrideTuple.Data[6].b = true;		//convert time to hours - also handled by other mods
 		}
 	}
 
