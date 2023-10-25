@@ -30,6 +30,9 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 	local ECharStatType NewStatName;
 	local int Boost;
 
+	local XComGameState_HeadquartersProjectHealSoldier HealProject;
+	local int NewBlocksRemaining, NewProjectPointsRemaining;
+
 	History = `XCOMHISTORY;
 	ProjectState = XComGameState_HeadquartersProjectGeneModOperation(History.GetGameStateForObjectID(ProjectRef.ObjectID));
 
@@ -131,9 +134,6 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 			
 			UnitState.SetUnitFloatValue(GeneModCategory, UV_Holder, eCleanup_Never);
 
-			// Set back to active
-			UnitState.SetStatus(eStatus_Active);
-
 			// Remove the soldier from the staff slot
 			StaffSlotState = UnitState.GetStaffSlot();
 			if (StaffSlotState != none)
@@ -155,6 +155,51 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 			if (`SecondWaveEnabled('GM_SWO_MutagenicGrowth'))
 			{
 				SWO_RestoreLostLimb(UnitState, AddToGameState, GeneMod, XComHQ);
+			}
+
+			// Handle cleanup of unit status. Remove healing project if unit at max HP after Gene Mod.
+
+			if(UnitState.GetCurrentStat(eStat_HP) == UnitState.GetMaxStat(eStat_HP))
+			{
+				// Get the unit's healing project
+				HealProject = GetUnitHealingProject(UnitState);
+
+				// If we found it, complete the project.
+				if(HealProject.ProjectFocus == UnitState.GetReference())
+				{
+					HealProject.OnProjectCompleted();
+				}
+
+				// Set back to active
+				UnitState.SetStatus(eStatus_Active);
+			}
+			else
+			{
+				// if we're here, the unit isn't fully healed.
+				HealProject = GetUnitHealingProject(UnitState);
+
+				if(HealProject.ProjectFocus == UnitState.GetReference())
+				{
+					// Update the state of the healing project.  Code taken from CHL.
+					NewBlocksRemaining = UnitState.GetBaseStat(eStat_HP) - UnitState.GetCurrentStat(eStat_HP);
+					if (NewBlocksRemaining > HealProject.BlocksRemaining) // Unit HP is different from healing project HP
+					{
+						HealProject = XComGameState_HeadquartersProjectHealSoldier(AddToGameState.ModifyStateObject(class'XComGameState_HeadquartersProjectHealSoldier', HealProject.ObjectID));
+
+						NewProjectPointsRemaining = HealProject.GetWoundPoints(UnitState, HealProject.ProjectPointsRemaining);
+
+						HealProject.ProjectPointsRemaining = NewProjectPointsRemaining;
+						HealProject.BlocksRemaining = NewBlocksRemaining;
+						HealProject.PointsPerBlock = Round(float(NewProjectPointsRemaining) / float(NewBlocksRemaining));
+						HealProject.BlockPointsRemaining = HealProject.PointsPerBlock;
+						HealProject.UpdateWorkPerHour();
+						HealProject.StartDateTime = `STRATEGYRULES.GameTime;
+						HealProject.SetProjectedCompletionDateTime(HealProject.StartDateTime);
+					}
+
+					// Set the status back to healing.
+					UnitState.SetStatus(eStatus_healing);
+				}
 			}
 			
 			//	Remove any negative traits acquired as the result of canceling previous Gene Modding projects
@@ -308,4 +353,23 @@ static function GiveRandomNegativeTraitToUnit(out XComGameState_Unit UnitState, 
 
 	//	Not sure where that's used, but this was in the original code.
 	`XEVENTMGR.TriggerEvent( 'UnitTraitsChanged', UnitState, , NewGameState );
+}
+
+// Helper function modeled on XCGS_Unit's HasHealingProject
+static function XComGameState_HeadquartersProjectHealSoldier GetUnitHealingProject(XComGameState_Unit Unit)
+{
+	local XComGameStateHistory History;
+	local XComGameState_HeadquartersProjectHealSoldier HealProject, EmptyHealProject;
+
+	History = `XCOMHISTORY;
+
+	foreach History.IterateByClassType(class'XComGameState_HeadquartersProjectHealSoldier', HealProject)
+	{
+		if(HealProject.ProjectFocus == Unit.GetReference())
+		{
+			return HealProject;
+		}
+	}
+
+	return EmptyHealProject;
 }
