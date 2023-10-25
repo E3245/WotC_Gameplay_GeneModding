@@ -295,7 +295,15 @@ static function CancelSoldierTrainingProject(XComGameState AddToGameState, State
 				UnitState.SetUnitFloatValue('GeneModsImplantsFailed', UV_Holder, eCleanup_Never);
 			}
 
-			UnitState.SetStatus(eStatus_Active);
+			if(!UnitState.IsInjured())
+			{
+				UnitState.SetStatus(eStatus_Active);
+			}
+			else
+			{
+				// Set the unit back to healing status if they are injured.
+				UnitState.SetStatus(eStatus_Healing);
+			}
 
 			// Remove the soldier from the staff slot
 			StaffSlotState = UnitState.GetStaffSlot();
