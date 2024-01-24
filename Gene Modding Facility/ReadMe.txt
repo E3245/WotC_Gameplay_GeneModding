@@ -109,5 +109,5 @@ A: Not really, no.
 
 Release ver: 1.022:
 [list]
-     [*]Fixed status display issue.
+     [*]Added Tedster's fix for units that are wounded and gene modded at the same time would allow them to be deployed in a covert action and be in a infiltration at the same time.
 [/list]
