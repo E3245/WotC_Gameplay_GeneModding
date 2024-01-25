@@ -31,6 +31,8 @@ var config int GeneModLimitCat7;
 
 var config bool IntegratedWarfare_BoostGeneStats;
 
+var config string				AbilityGeneModIconColor;
+
 var localized string			str_SWO_OnlyMutant_Description;
 var localized string			str_SWO_OnlyMutant_Tooltip;
 var localized string			str_SWO_MutagenicGrowth_Description;
@@ -368,22 +370,25 @@ static function RecolorGeneModAbility_Recursive(name AbilityName, X2AbilityTempl
 
 	if (Template != none)
 	{
-		Template.AbilitySourceName = 'eAbilitySource_Commander';
+		//Template.AbilitySourceName = 'eAbilitySource_Commander';
+		Template.AbilityIconColor	= default.AbilityGeneModIconColor;
 
+		/*
+		// Hidden because we're not changing the sources on Persistent Effects
 		for (i = 0; i < Template.AbilityTargetEffects.Length; i++)
 		{
 			if (X2Effect_Persistent(Template.AbilityTargetEffects[i]).BuffCategory == ePerkBuff_Passive)
 			{
-				X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+				//X2Effect_Persistent(Template.AbilityTargetEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
 			}
 		}
 		for (i = 0; i < Template.AbilityShooterEffects.Length; i++)
 		{
 			if (X2Effect_Persistent(Template.AbilityShooterEffects[i]).BuffCategory == ePerkBuff_Passive)
 			{
-				X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
+				//X2Effect_Persistent(Template.AbilityShooterEffects[i]).AbilitySourceName = 'eAbilitySource_Commander';
 			}
-		}
+		}*/
 	}
 	foreach Template.AdditionalAbilities(AdditionalAbilityName)
 	{
