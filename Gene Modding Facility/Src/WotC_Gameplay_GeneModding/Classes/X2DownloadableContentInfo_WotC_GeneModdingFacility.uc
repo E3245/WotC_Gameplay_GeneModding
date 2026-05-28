@@ -8,8 +8,21 @@
 
 class X2DownloadableContentInfo_WotC_GeneModdingFacility extends X2DownloadableContentInfo config(GameData);
 
+// v1.025: Struct for Category Limits
+struct GeneModCategoryLimit
+{
+	var name CategoryName;
+	var int Limit;
+};
+
 var config int DefaultGeneModOpWorkPerHour;
 var config array<int> GeneModOpDays;
+
+// v1.025: Config array for Category Limits
+var config array<GeneModCategoryLimit> GeneModCategoryLimits;
+
+// v1.025: Fallback limits for gene mods
+var config int DefaultGeneModLimit;
 
 // v1.025: Toggle logging behind config
 var config bool EnableLogForModule;
@@ -581,4 +594,32 @@ static function GetGMHQEvents(out array<HQEvent> arrEvents)
 			arrEvents.AddItem(kEvent);
 		}
 	}
+}
+
+// v1.025: Configurable Limits for category
+static function int GetLimitForCategory(Name CategoryToFind)
+{
+	local int Idx; 
+
+	Idx = default.GeneModCategoryLimits.Find('CategoryName', CategoryToFind);
+
+	if (Idx != INDEX_NONE)
+	{
+		return default.GeneModCategoryLimits[Idx].Limit;
+	}
+
+	return default.DefaultGeneModLimit;
+}
+
+exec function GeneModdingFacilityDemo()
+{
+// Command List to unlock all functionality for Gene Modding
+//	GiveFacility('AdvancedWarfareCenter', 3);
+//	GiveFacilityUpgrade('Infirmary_GeneModdingChamber');
+
+//	GiveTech('AlienBiotech');
+//	GiveTech('AutopsyBerserker');
+//	GiveTech('Psionics');
+//	GiveTech('AutopsySectoid');
+//	GiveTech('AutopsyViper');
 }

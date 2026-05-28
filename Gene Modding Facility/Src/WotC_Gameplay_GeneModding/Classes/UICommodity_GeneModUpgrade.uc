@@ -466,6 +466,10 @@ function bool CheckIfPurchasedCategory(X2GeneModTemplate GeneMod)
 
 function int MatchLimitValue(name Category)
 {
+	// v1.025: Configurable Limits for category
+	return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.static.GetLimitForCategory(Category);
+
+	/*
 	switch (Category) {
 		case ('GMCat_brain'):
 			return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.GeneModLimitCat1;
@@ -489,8 +493,10 @@ function int MatchLimitValue(name Category)
 			return class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.GeneModLimitCat7;
 			break;
 		default:
+			return 99;
 			break;
 		}
+	*/
 }
 
 private function bool IsItemRestrictedByExistingMod(X2GeneModTemplate GeneMod)
