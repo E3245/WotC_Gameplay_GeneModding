@@ -12,7 +12,7 @@ Summary="Upon taking lethal damage, this soldier will begin bleeding out. They w
 
 [GM_IRI_TranquilMind X2GeneModTemplate]
 DisplayName="Tranquil Mind"
-Summary="This soldier cannot be targeted or affect by ANY psionic abilities, including those from allied sources or the soldier themselves."
+Summary="This soldier cannot be targeted by psionic abilities from all sources including themselves. However, this gene mod will negate ALL psionic abilities on this soldier.\n\nNot recommended for Psions or Templar classes as it completely disables all psionic abilities if implanted."
 
 [GM_IRI_ChaoticMind X2GeneModTemplate]
 DisplayName="Chaotic Mind"
