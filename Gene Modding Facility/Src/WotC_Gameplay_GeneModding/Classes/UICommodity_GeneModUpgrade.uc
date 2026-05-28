@@ -67,8 +67,17 @@ var UIArmory_LoadoutItemTooltip			StatTooltip;
 //This array need several blank templates to be in the correct order
 var array<X2GeneModTemplate>			arrGeneMod_Master;
 var array<Commodity>					arrGeneMod_Comm;
+
+// Tracks Commodities
 var array<Tracker>						arrTracker;
-var int									currentInterator;
+
+// Number of commodities or list items
+var int									TrackerListCount;
+
+// V1.025
+// Store valid list indices for controller/keyboard navigation and have navigation cycle through items
+var array<int>							SelectableListItems;
+var int									ControllerSelectedIndex;
 
 var UIPanel								ListContainer; // contains all controls bellow
 var UIList								List;
@@ -80,6 +89,8 @@ var UIPanel								StatArea;
 
 // Set this to specify how long camera transition should take for this screen
 var float								OverrideInterpTime;
+
+
 
 //-------------- EVENT HANDLING --------------------------------------------------------
 
@@ -94,7 +105,10 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	m_arrUnlocks.Remove(0, m_arrUnlocks.Length);
 
 	//Set iterator to 0
-	currentInterator = 0;
+	TrackerListCount = 0;
+	ControllerSelectedIndex = 0;
+	SelectableListItems.Length = 0;
+
 	BuildScreen();
 	UpdateList();
 
@@ -187,7 +201,14 @@ simulated function SelectedItemChanged(UIList ContainerList, int ItemIndex)
 {
 	local UIInventory_ListItem ListItem;
 	ListItem = UIInventory_ListItem(ContainerList.GetItem(ItemIndex));
-	`LOG("Gene Modding | UI | SelectedItemChanged() :: Last Selected Option " $ List.SelectedIndex $ " From List", , 'WotC_Gameplay_GeneModding');
+
+	// V1.025: Track selected index for controller support
+	iSelectedItem = ItemIndex;
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Gene Modding | UI | SelectedItemChanged() :: Last Selected Option " $ iSelectedItem $ " From List", , 'WotC_Gameplay_GeneModding');
+
 	if(ListItem != none)
 	{
 		PopulateResearchCard(ListItem.ItemComodity, ListItem.ItemRef);
@@ -307,11 +328,13 @@ simulated function UI_CreateHeaderandList(string LocHeader, array<Commodity> arr
     local UIInventory_HeaderListItem Header;
     local UIInventory_ListItem_Custom ListItem;
 	local Commodity Template;
-	local int i;
+	local int i, ListItemIndex;
 
     Header = Spawn(class'UIInventory_HeaderListItem', List.ItemContainer);
+	Header.bIsNavigable = false;
+	Header.bProcessesMouseEvents = false;
 	Header.InitHeaderItem(, LocHeader);
-    Header.bIsNavigable = false;
+	Header.DisableNavigation();
 
 	for(i = 0; i < arrComm.Length; i++)
 	{
@@ -319,11 +342,17 @@ simulated function UI_CreateHeaderandList(string LocHeader, array<Commodity> arr
 		ListItem = Spawn(class'UIInventory_ListItem_Custom', List.ItemContainer);
 		ListItem.InitInventoryListCommodity(Template, , GetButtonString(i), eUIConfirmButtonStyle_Default, ConfirmButtonX, ConfirmButtonY);
 
-		if (currentInterator <= arrTracker.Length)
+		ListItemIndex = List.GetItemIndex(ListItem);
+
+		if (TrackerListCount <= arrTracker.Length)
 		{
-			arrTracker[currentInterator].ListID = List.GetItemIndex(ListItem);
-			`LOG("Gene Modding | UI | UI_CreateHeaderandList() :: Assigned: " $ arrGeneMod_Master[currentInterator].GetDisplayName() $ " To List.ItemContainer Slot " $ arrTracker[currentInterator].ListID , , 'WotC_Gameplay_GeneModding');
-			currentInterator++;
+			arrTracker[TrackerListCount].ListID = ListItemIndex;
+
+			TrackerListCount++;
+
+			// Track ListIDs for Controller/Keyboard nav
+			SelectableListItems.AddItem(ListItemIndex);
+
 			// v1.025: Toggle logging behind config
 			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
 			{
@@ -737,7 +766,6 @@ simulated function OnPurchaseClicked()
 	local string				strTitle, strText;
 	local Tracker				selTracker;
 
-	iSelectedItem = List.SelectedIndex;
 	selTracker = RetrieveTrackerInfoFromListIndex(iSelectedItem);
 
 	SelectedGeneMod = arrGeneMod_Master[selTracker.GeneModID];
@@ -1037,13 +1065,16 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
 		return false;
 
-	bHandled = super.OnUnrealCommand(cmd, arg);
+	// V1.025: Fixed double input bug when navigating list
+	// Navigate list on controller
+	bHandled = true;
 	switch( cmd )
 	{
-//		case class'UIUtilities_Input'.const.FXS_BUTTON_A:
-//		case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
-//			OnPurchaseClicked();
-//			break;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_A :
+			`SOUNDMGR.PlaySoundEvent("Generic_Mouse_Click");
+			OnPurchaseClicked(); // Function will handle cost and other requirements
+			bHandled = true;
+			break;
 		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
 		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
 		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
@@ -1052,6 +1083,18 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 		case class'UIUtilities_Input'.const.FXS_BUTTON_START:
 			`HQPRES.UIPauseMenu( ,true );
 			break;
+		case class'UIUtilities_Input'.const.FXS_ARROW_UP:
+		case class'UIUtilities_Input'.const.FXS_DPAD_UP:
+		case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
+			if ( DPadUpNavigation() )
+				bHandled = true;
+			break;
+		case class'UIUtilities_Input'.const.FXS_ARROW_DOWN:
+		case class'UIUtilities_Input'.const.FXS_DPAD_DOWN:
+		case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_DOWN:
+			if ( DPadDownNavigation() )
+				bHandled = true;
+			break;
 		default:
 			bHandled = false;
 			break;
@@ -1059,6 +1102,48 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
+
+function bool DPadUpNavigation()
+{
+	if (SelectableListItems.Length <= 1)
+		return false; // Event Unhandled
+
+	ControllerSelectedIndex -= 1;
+
+	if (ControllerSelectedIndex < 0)
+	{
+		ControllerSelectedIndex = SelectableListItems.Length - 1;
+	}
+
+	// Force select list and fire delegates
+	List.SetSelectedIndex(SelectableListItems[ControllerSelectedIndex]);
+
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+	{
+		`LOG("Gene Modding | UI | DPadUpNavigation() :: New Selected Index: " $ ControllerSelectedIndex $ ", Selected List ID: " $ SelectableListItems[ControllerSelectedIndex], , 'WotC_Gameplay_GeneModding');
+	}
+
+	return true; // Event Handled
+}
+
+function bool DPadDownNavigation()
+{
+	if (SelectableListItems.Length <= 1)
+		return false; // Event Unhandled
+
+	ControllerSelectedIndex = (ControllerSelectedIndex + 1) % SelectableListItems.Length;
+
+	// Force select list and fire delegates
+	List.SetSelectedIndex(SelectableListItems[ControllerSelectedIndex]);
+
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+	{
+		`LOG("Gene Modding | UI | DPadDownNavigation() :: New Selected Index: " $ ControllerSelectedIndex $ ", Selected List ID: " $ SelectableListItems[ControllerSelectedIndex], , 'WotC_Gameplay_GeneModding');
+	}
+
+	return true; // Event Handled
+}
+
 
 defaultproperties
 {
