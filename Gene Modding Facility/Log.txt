@@ -1,5 +1,14 @@
 History of Changes:
 
+Release ver: 1.025:
+[list]
+	 [*]Controller Support!
+     [*]Configurable Category Limits for custom gene mod categories in XComGameData.ini. If category does not exist, falls back to the value of DefaultGeneModLimit.
+	 [*]Disabled logging for script module WotC_Gameplay_GeneModding. To enable logging for debugging, set EnableLogForModule to true in XComGameData.ini.
+	 [*]Added event trigger for UpdateList() in UICommodity_GeneModUpgrade.uc
+	 [*]Updated Tranquil Mind Gene Mod description for more clarity.
+[/list]
+
 Release ver: 1.024:
 [list]
      [*]Fixed this mod changing the AbilitySourceName, which would cause problems with certain Psionic abilities not working as intended. Psionic Gene mods will keep the purple color.

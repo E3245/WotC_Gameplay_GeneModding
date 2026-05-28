@@ -107,7 +107,11 @@ A: Not really, no.
 [h1][b]LOG[/b][/h1]
 [h1]-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.[/h1]
 
-Release ver: 1.022:
+Release ver: 1.025:
 [list]
-     [*]Added Tedster's fix for units that are wounded and gene modded at the same time would allow them to be deployed in a covert action and be in a infiltration at the same time.
+	 [*]Controller Support!
+     [*]Configurable Category Limits for custom gene mod categories in XComGameData.ini. If category does not exist, falls back to the value of DefaultGeneModLimit.
+	 [*]Disabled logging for script module WotC_Gameplay_GeneModding. To enable logging for debugging, set EnableLogForModule to true in XComGameData.ini.
+	 [*]Added event trigger for UpdateList() in UICommodity_GeneModUpgrade.uc
+	 [*]Updated Tranquil Mind Gene Mod description for more clarity.
 [/list]
