@@ -38,11 +38,14 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 
 	if (ProjectState != none)
 	{
-		`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Got Valid ProjectState", , 'WotC_Gameplay_GeneModding');
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Got Valid ProjectState", , 'WotC_Gameplay_GeneModding');
+
 		UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ProjectState.ProjectFocus.ObjectID));
 		if (UnitState != none)
 		{
-			`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: " $ UnitState.GetName(eNameType_FullNick), , 'WotC_Gameplay_GeneModding');
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+				`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: " $ UnitState.GetName(eNameType_FullNick), , 'WotC_Gameplay_GeneModding');
 			
 			GeneMod = ProjectState.GetMyTemplate();
 			
@@ -51,7 +54,9 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 			AbilityType.AbilityName = GeneMod.AbilityName;
 			AbilityType.ApplyToWeaponSlot = eInvSlot_Unknown;
 			
-			`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Adding " $ AbilityType.AbilityName $ " to soldier", , 'WotC_Gameplay_GeneModding');			
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+				`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Adding " $ AbilityType.AbilityName $ " to soldier", , 'WotC_Gameplay_GeneModding');			
+			
 			GMAgAbility.AbilityType = AbilityType;
 			GMAgAbility.bUnlocked = true;
 			GMAgAbility.iRank = 0;
@@ -88,7 +93,9 @@ static function CompletePsiTraining(XComGameState AddToGameState, StateObjectRef
 				}
 			}
 
-			`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Adjusting Stats", , 'WotC_Gameplay_GeneModding');
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+				`LOG("Gene Modding | Headquarters Order | CompletePsiTraining() :: Adjusting Stats", , 'WotC_Gameplay_GeneModding');
+
 			// Adjust Stats Accordingly
 			for (i = 0; i < GeneMod.StatChanges.Length; i++)
 			{
@@ -379,5 +386,5 @@ static function XComGameState_HeadquartersProjectHealSoldier GetUnitHealingProje
 		}
 	}
 
-	return EmptyHealProject;
+	return EmptyHealProject; // Ignore warning, this is intentional
 }

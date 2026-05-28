@@ -22,19 +22,23 @@ private static function XComGameState_ShownGeneModPopups GetOrCreate(out XComGam
 
 	History = `XCOMHISTORY;
 
-	`LOG("Get or create XComGameState_ShownGeneModPopups", bLog, 'IRIGENEPOP');
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Get or create XComGameState_ShownGeneModPopups", bLog, 'IRIGENEPOP');
 	
 	StateObject = XComGameState_ShownGeneModPopups(History.GetSingleGameStateObjectForClass(class'XComGameState_ShownGeneModPopups', true));
 
 	if (StateObject == none)
 	{
-		`LOG("State object doesn't exist, creating new one", bLog, 'IRIGENEPOP');
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("State object doesn't exist, creating new one", bLog, 'IRIGENEPOP');
 		
 		StateObject = XComGameState_ShownGeneModPopups(NewGameState.CreateNewStateObject(class'XComGameState_ShownGeneModPopups'));
 	}
 	else 
 	{
-		`LOG("State object already exists, returning reference", bLog, 'IRIGENEPOP');
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("State object already exists, returning reference", bLog, 'IRIGENEPOP');
+
 		StateObject = XComGameState_ShownGeneModPopups(NewGameState.ModifyStateObject(class'XComGameState_ShownGeneModPopups', StateObject.ObjectID));
 	}
 
@@ -43,14 +47,20 @@ private static function XComGameState_ShownGeneModPopups GetOrCreate(out XComGam
 
 private function bool WasPopupDisplayedAlready(name GeneModTemplateName)
 {
-	`LOG("Checking if the popup was already shown for " @ GeneModTemplateName, bLog, 'IRIGENEPOP');
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Checking if the popup was already shown for " @ GeneModTemplateName, bLog, 'IRIGENEPOP');
 
 	if (DisplayedPopups.Find(GeneModTemplateName) != INDEX_NONE)
 	{
-		`LOG("It was.", bLog, 'IRIGENEPOP');
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("It was.", bLog, 'IRIGENEPOP');
+
 		return true;
 	}
-	`LOG("It was NOT.", bLog, 'IRIGENEPOP');
+
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("It was NOT.", bLog, 'IRIGENEPOP');
+
 	return false;
 }
 
@@ -70,7 +80,9 @@ public static function DisplayPopupOnce(X2GeneModTemplate GeneModTemplate)
 	}
 	else
 	{
-		`LOG("Displaying popup for" @ GeneModTemplate.DataName, bLog, 'IRIGENEPOP');
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("Displaying popup for" @ GeneModTemplate.DataName, bLog, 'IRIGENEPOP');
+
 		class'X2Helpers_BuildAlert_GeneMod'.static.GM_UINewGeneModAvailable(GeneModTemplate);
 
 		NewStateObject.DisplayedPopups.AddItem(GeneModTemplate.DataName);
@@ -107,7 +119,8 @@ public static function CureNegativeTraitsForUnit(out XComGameState_Unit NewUnitS
 	local X2TraitTemplate					CurrentTraitTemplate;
 	local X2EventListenerTemplateManager	EventTemplateManager;
 
-	`LOG("CureNegativeTraitsForUnit: " @ NewUnitState.GetFullName() @ "Neg. Traits: " @ NewUnitState.NegativeTraits.Length, bLog, 'IRIGENEPOP');
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("CureNegativeTraitsForUnit: " @ NewUnitState.GetFullName() @ "Neg. Traits: " @ NewUnitState.NegativeTraits.Length, bLog, 'IRIGENEPOP');
 
 	NewStateObject = static.GetOrCreate(NewGameState);
 

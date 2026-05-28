@@ -222,53 +222,84 @@ simulated function UpdateList()
 	PopulateItemCard();
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_brain');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 1" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 1" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat1, arrGeneMod); 
 	}
 	
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_eyes');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 2" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 2" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat2, arrGeneMod); 
 	}
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_chest');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 3" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 3" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat3, arrGeneMod); 
 	}
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_skin');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 4" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 4" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat4, arrGeneMod); 
 	}
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_legs');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 5" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 5" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat5, arrGeneMod); 
 	}
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_arms');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 6" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 6" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat6, arrGeneMod); 
 	}
 
 	arrGeneMod = ConvertGeneModsToCommodities('GMCat_none');
-	`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 7" , , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | UI | UpdateList() :: Counted: " $ arrGeneMod.Length $ " Commodities for Category 7" , , 'WotC_Gameplay_GeneModding');
+
 	if (arrGeneMod.Length > 0)
 	{
 		UI_CreateHeaderandList(m_strGMCat7, arrGeneMod); 
 	}
+
+	// v1.025: Add trigger for mods to change the screen whenever the list updates
+	`XEVENTMGR.TriggerEvent('UICommodity_GeneModUpgrade_UpdateList', self);
 }
 
 simulated function UI_CreateHeaderandList(string LocHeader, array<Commodity> arrComm)
@@ -293,6 +324,12 @@ simulated function UI_CreateHeaderandList(string LocHeader, array<Commodity> arr
 			arrTracker[currentInterator].ListID = List.GetItemIndex(ListItem);
 			`LOG("Gene Modding | UI | UI_CreateHeaderandList() :: Assigned: " $ arrGeneMod_Master[currentInterator].GetDisplayName() $ " To List.ItemContainer Slot " $ arrTracker[currentInterator].ListID , , 'WotC_Gameplay_GeneModding');
 			currentInterator++;
+			// v1.025: Toggle logging behind config
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			{
+				`LOG("Gene Modding | UI | UI_CreateHeaderandList() :: Assigned: " $ arrGeneMod_Master[TrackerListCount].GetDisplayName() $ " To List.ItemContainer Slot " $ arrTracker[TrackerListCount].ListID , , 'WotC_Gameplay_GeneModding');
+				`LOG("Gene Modding | UI | UI_CreateHeaderandList() :: Added Index: " $ ListItemIndex $ " To Selectable List Items, Size: " $ SelectableListItems.Length, , 'WotC_Gameplay_GeneModding');
+			}
 		}
 	}
 
@@ -382,8 +419,13 @@ simulated function array<Commodity> ConvertGeneModsToCommodities(name category)
 		//Master Commodities
 		arrGeneMod_Comm.AddItem(GMComm);
 		arrGeneMod_Master.AddItem(m_arrUnlocks[iUnlock]);
-		`LOG("Gene Modding | UI | ConvertGeneModsToCommodities() :: Assigned: " $ arrGeneMod_Master[arrGeneMod_Master.Length - 1].GetDisplayName() $ " To Master Array at Index " $ Track.GeneModID , , 'WotC_Gameplay_GeneModding');
-		`log("Gene Modding | UI | ConvertGeneModsToCommodities() :: Hours Calculated for Gene Mod: " $ GMComm.OrderHours , , 'WotC_Gameplay_GeneModding');
+
+		// v1.025: Toggle logging behind config
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		{
+			`LOG("Gene Modding | UI | ConvertGeneModsToCommodities() :: Assigned: " $ arrGeneMod_Master[arrGeneMod_Master.Length - 1].GetDisplayName() $ " To Master Array at Index " $ Track.GeneModID , , 'WotC_Gameplay_GeneModding');
+			`log("Gene Modding | UI | ConvertGeneModsToCommodities() :: Hours Calculated for Gene Mod: " $ GMComm.OrderHours , , 'WotC_Gameplay_GeneModding');
+		}
 	}
 
 	return arrCommodoties;
@@ -400,15 +442,25 @@ function bool CheckIfPurchasedCategory(X2GeneModTemplate GeneMod)
 	local UnitValue CurrentValue;
 	local int Limit;
 
-	`LOG("Gene Modding | UI | CheckIfPurchasedCategory() :: Checking if soldier already has a Gene Mod of category: " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');	
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Gene Modding | UI | CheckIfPurchasedCategory() :: Checking if soldier already has a Gene Mod of category: " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');	
+	
 	Limit = MatchLimitValue(GeneMod.GeneCategory);
 	UnitState.GetUnitValue(GeneMod.GeneCategory, CurrentValue);
 	if (CurrentValue.fValue >= Limit)
 	{
-		`LOG("Gene Modding | UI | CheckIfPurchasedCategory() ::  Soldier Got Gene Mod of Category: " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');
+		// v1.025: Toggle logging behind config
+		if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+			`LOG("Gene Modding | UI | CheckIfPurchasedCategory() ::  Soldier Got Gene Mod of Category: " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');
+		
 		return true;		
 	}
-	`LOG("Gene Modding | UI | CheckIfPurchasedCategory() ::  Got Unit Value: " $ CurrentValue.fValue $ " of Category " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');
+
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Gene Modding | UI | CheckIfPurchasedCategory() ::  Got Unit Value: " $ CurrentValue.fValue $ " of Category " $ GeneMod.GeneCategory, , 'WotC_Gameplay_GeneModding');
+	
 	return false;
 }
 
@@ -681,15 +733,9 @@ simulated function OnPurchaseClicked()
 
 	iSelectedItem = List.SelectedIndex;
 	selTracker = RetrieveTrackerInfoFromListIndex(iSelectedItem);
-	`LOG("Gene Modding | UI | OnPurchaseClicked() :: Picked Option " $ iSelectedItem $ " From List.ItemContainer", , 'WotC_Gameplay_GeneModding');
 
 	SelectedGeneMod = arrGeneMod_Master[selTracker.GeneModID];
 	SelectedCommodity = arrGeneMod_Comm[selTracker.CommodityID];
-
-	if (SelectedGeneMod != none)
-		`LOG("Gene Modding | UI | OnPurchasedClicked() :: Selected Gene Mod: " $ SelectedGeneMod.GetDisplayName(), , 'WotC_Gameplay_GeneModding');
-	else
-		`LOG("Gene Modding | UI | OnPurchasedClicked() :: Selected Gene Mod is blank!", , 'WotC_Gameplay_GeneModding');		
 
     if (!IsItemPurchased(SelectedGeneMod) && 
 		MeetsItemReqs(SelectedCommodity) && 
@@ -722,6 +768,17 @@ simulated function OnPurchaseClicked()
     {
         PlayNegativeSound(); // bsg-jrebar (4/20/17): New PlayNegativeSound Function in Parent Class
     }
+	
+	// v1.025: Toggle logging behind config
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+	{
+		if (SelectedGeneMod != none)
+			`LOG("Gene Modding | UI | OnPurchasedClicked() :: Selected Gene Mod: " $ SelectedGeneMod.GetDisplayName(), , 'WotC_Gameplay_GeneModding');
+		else
+			`LOG("Gene Modding | UI | OnPurchasedClicked() :: Selected Gene Mod is blank!", , 'WotC_Gameplay_GeneModding');		
+
+		`LOG("Gene Modding | UI | OnPurchaseClicked() :: Picked Option " $ iSelectedItem $ " From List.ItemContainer", , 'WotC_Gameplay_GeneModding');
+	}
 }
 
 simulated protected function ConfirmPurchasePopupCallback (name eAction)

@@ -28,9 +28,9 @@ function SetProjectFocus(StateObjectReference FocusRef, optional XComGameState N
 	ProjectPointsRemaining = CalculatePointsToTrain(GetMyTemplate().BaseTimeToCompletion);
 	InitialProjectPoints = ProjectPointsRemaining;
 
-
-
-	`log("Gene Modding | ProjectState | GetGMOrderDays() :: Hours Calculated by ProjectState: " $ ProjectPointsRemaining , , 'WotC_Gameplay_GeneModding');
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`log("Gene Modding | ProjectState | GetGMOrderDays() :: Hours Calculated by ProjectState: " $ ProjectPointsRemaining , , 'WotC_Gameplay_GeneModding');
+	
 	UpdateWorkPerHour(NewGameState); 
 	TimeState = XComGameState_GameTime(History.GetSingleGameStateObjectForClass(class'XComGameState_GameTime'));
 	StartDateTime = TimeState.CurrentTime;

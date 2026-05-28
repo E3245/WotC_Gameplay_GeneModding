@@ -22,7 +22,9 @@ static function CHEventListenerTemplate CreateArmoryUIListeners()
 	Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_OnStateSubmitted);
 
 	Template.RegisterInStrategy = true;
-	`LOG("Register Event CustomizeStatusStringsSeparate",, 'WotC_Gameplay_GeneModding');
+
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Register Event CustomizeStatusStringsSeparate",, 'WotC_Gameplay_GeneModding');
 
 	return Template;
 }
@@ -39,7 +41,9 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 	OverrideTuple = XComLWTuple(EventData);
 	if (OverrideTuple == none || OverrideTuple.Id != 'OverridePersonnelStatus') return ELR_NoInterrupt;
 
-	`LOG("Event OverridePersonnelStatus triggered",, 'WotC_Gameplay_GeneModding');
+	if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+		`LOG("Event OverridePersonnelStatus triggered",, 'WotC_Gameplay_GeneModding');
+
 	//This is the correct event, get unit and assigned staff slot
 	Unit = XComGameState_Unit(EventSource);
 	StaffSlot = Unit.GetStaffSlot();
@@ -51,7 +55,10 @@ static protected function EventListenerReturn UIArmory_UpdateStatuses(Object Eve
 		if (ProjectState != none)
 		{
 			OverrideTuple.Data[0].s = StaffSlot.GetBonusDisplayString();	//status string
-			`LOG("Tuple.Data[0].s = " $ OverrideTuple.Data[0].s ,, 'WotC_Gameplay_GeneModding');
+
+			if (class'X2DownloadableContentInfo_WotC_GeneModdingFacility'.default.EnableLogForModule)
+				`LOG("Tuple.Data[0].s = " $ OverrideTuple.Data[0].s ,, 'WotC_Gameplay_GeneModding');
+
 			OverrideTuple.Data[1].s = "";	//time label
 			OverrideTuple.Data[2].s = "";	//time value
 			OverrideTuple.Data[3].i = ProjectState.GetCurrentNumHoursRemaining();	//time number

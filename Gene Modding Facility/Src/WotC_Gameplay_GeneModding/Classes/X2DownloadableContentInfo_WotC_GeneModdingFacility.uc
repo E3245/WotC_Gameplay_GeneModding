@@ -11,6 +11,9 @@ class X2DownloadableContentInfo_WotC_GeneModdingFacility extends X2DownloadableC
 var config int DefaultGeneModOpWorkPerHour;
 var config array<int> GeneModOpDays;
 
+// v1.025: Toggle logging behind config
+var config bool EnableLogForModule;
+
 var config array<name> DisallowedClasses;
 
 var config array<name> NegativeAbilityName;
